@@ -7,45 +7,39 @@ export default function Watchlist() {
   const { data = [] } = useMarketData("CRYPTO");
 
   const watchlistCoins = data.filter((coin) => watchlist.includes(coin.symbol));
-
   return (
-    <div style={container}>
-      <h2>⭐ My Watchlist</h2>
-
+    <div className="max-w-full mx-auto px-6 py-10 text-white bg-[#0f1116] min-h-screen">
+      <h2 className="text-3xl font-bold mb-6">⭐ My Watchlist</h2>
       {watchlistCoins.length === 0 && (
-        <p style={{ opacity: 0.6 }}>No coins added to watchlist</p>
+        <p className="opacity-60 italic mb-6">No coins added to watchlist</p>
       )}
-
-      <div style={tableHeader}>
+      <div className="grid grid-cols-[1fr_1fr_1fr_120px] opacity-60 font-semibold border-b border-gray-700 pb-2 mb-2">
         <span>Name</span>
         <span>Price</span>
         <span>24h Change</span>
         <span></span>
       </div>
-
       {watchlistCoins.map((coin) => {
         const change = Number(coin.priceChangePercent).toFixed(2);
-
         return (
-          <div key={coin.symbol} style={row}>
-            <Link to={`/trade/${coin.symbol}`} style={name}>
+          <div
+            key={coin.symbol}
+            className="grid grid-cols-[1fr_1fr_1fr_120px] py-3 border-b border-gray-800 items-center hover:bg-gray-900 transition">
+            <Link
+              to={`/trade/${coin.symbol}`}
+              className="text-white font-medium hover:text-yellow-400 transition" >
               {coin.symbol}
             </Link>
-
-            <span>${Number(coin.lastPrice).toFixed(4)}</span>
-
+            <span className="font-medium">${Number(coin.lastPrice).toFixed(4)}</span>
             <span
-              style={{
-                color: change > 0 ? "#16c784" : "#ea3943",
-              }}
-            >
+              className={`font-medium ${
+                change > 0 ? "text-green-500" : "text-red-500"
+              }`} >
               {change}%
             </span>
-
             <button
               onClick={() => toggleWatchlist(coin.symbol)}
-              style={removeBtn}
-            >
+              className="bg-red-600 hover:bg-red-500 text-white px-3 py-1 rounded-lg font-semibold transition transform hover:scale-105">
               Remove
             </button>
           </div>
@@ -54,37 +48,3 @@ export default function Watchlist() {
     </div>
   );
 }
-
-const container = {
-  padding: "40px",
-  color: "white",
-};
-
-const tableHeader = {
-  display: "grid",
-  gridTemplateColumns: "1fr 1fr 1fr 120px",
-  opacity: 0.6,
-  marginTop: "20px",
-  marginBottom: "10px",
-};
-
-const row = {
-  display: "grid",
-  gridTemplateColumns: "1fr 1fr 1fr 120px",
-  padding: "12px",
-  borderBottom: "1px solid #1e1e1e",
-};
-
-const name = {
-  textDecoration: "none",
-  color: "white",
-};
-
-const removeBtn = {
-  background: "#ea3943",
-  border: "none",
-  color: "white",
-  padding: "6px 10px",
-  borderRadius: "6px",
-  cursor: "pointer",
-};

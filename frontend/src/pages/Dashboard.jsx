@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useMarketData } from "../hooks/useMarketData";
 import MarketCard from "../features/dashboard/MarketCard";
@@ -25,10 +26,9 @@ export default function Dashboard() {
     .slice(0, 100);
 
   return (<>
-    <Navbar/>
-    <div className="bg-[#1d2631]">
-      {/* Filter */}
-      <div>
+    <Navbar />
+    <div style={{ padding: "40px", background: "#000" }}>
+      <div style={{ marginBottom: "20px" }}>
         <select
           value={market}
           onChange={(e) => setMarket(e.target.value)}
@@ -41,15 +41,17 @@ export default function Dashboard() {
         </select>
       </div>
 
-      <div className="grid grid-cols-2 gap-6">
+      <div style={{ display: "flex", gap: "30px" }}>
         <MarketCard title="Hot Coins" coins={hot} />
+
         <MarketCard title="Top Gainers" coins={gainers} />
+
         <MarketCard title="Top Losers" coins={losers} />
+
         <MarketCard title="Top Volume" coins={volume} />
       </div>
     </div>
-    </>
-  );
+  </>);
 }
 
 const dropdown = {
@@ -57,5 +59,6 @@ const dropdown = {
   color: "white",
   padding: "10px",
   borderRadius: "8px",
-  border: "1px solid #333",
+  border: "none",
+  outline: "none",
 };

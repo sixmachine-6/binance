@@ -1,102 +1,59 @@
+import { TextAlignCenter } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { useWatchlist } from "../../context/WatchlistContext";
-
-async function fetchCoins(filter) {
-  const res = await fetch("https://api.binance.com/api/v3/ticker/24hr");
-  const data = await res.json();
-
-  return data.filter((coin) => coin.symbol.endsWith(filter));
-}
-
-export default function MarketCard({ title }) {
-  const { watchlist, toggleWatchlist } = useWatchlist();
-  const [filter, setFilter] = useState("USDT");
-
-  const { data: coins = [] } = useQuery({
-    queryKey: ["marketCoins", filter],
-    queryFn: () => fetchCoins(filter),
-    refetchInterval: 1000,
-  });
-
+import "./MarketCard.css";
+export default function MarketCard({ title, coins }) {
   return (
-    <div className="bg-[#0f1116] p-5 rounded-[14px] h-full border-4 w-sm overflow-hidden text-white">
-      {/* Title + Filter */}
-      <div className="flex justify-between items-center mb-3">
-        <h3 className="font-semibold">{title}</h3>
+    <div style={card}>
+      <h3 className="text-center text-white text-lg mb-2">{title}</h3>
 
-        <select
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-          className="bg-[#151821] text-sm px-2 py-1 rounded border border-[#1e1e1e]"
-        >
-          <option value="USDT">USDT</option>
-          <option value="BTC">BTC</option>
-          <option value="ETH">ETH</option>
-          <option value="BNB">BNB</option>
-        </select>
-      </div>
-
-      {/* Header */}
-      <div className="grid grid-cols-[2fr_1fr_1fr] opacity-60 mb-2 text-sm">
+      <div style={header}>
         <span>Name</span>
         <span>Price</span>
         <span>24h Change</span>
       </div>
 
-      {/* Coin List */}
-      <div className="max-h-[520px] overflow-y-auto scrollbar-hide">
-        {coins.slice(0, 20).map((coin, i) => {
+      <div className="coin-list" style={list}>
+        {coins.map((coin) => {
           const change = Number(coin.priceChangePercent).toFixed(2);
 
           const coinSymbol = coin.symbol
-            .replace("USDT", "")
-            .replace("BTC", "")
-            .replace("ETH", "")
-            .replace("BNB", "")
+            .replace(/USDT$|BTC$|ETH$|BNB$/i, "")
             .toLowerCase();
 
-          const isSaved = watchlist.includes(coin.symbol);
-
+          const iconSources = [
+            `https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@master/svg/color/${coinSymbol}.svg`,
+            `https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@master/svg/white/${coinSymbol}.svg`,
+            `https://raw.githubusercontent.com/ErikThiart/cryptocurrency-icons/master/16/${coinSymbol}.png`,
+          ];
           return (
-            <Link
-              key={coin.symbol}
-              to={`/trade/${coin.symbol}`}
-              className="no-underline text-inherit"
-            >
-              <div className="grid grid-cols-[2fr_1fr_1fr] items-center p-2.5 cursor-pointer border-b border-[#1e1e1e] hover:bg-[#151821] transition">
-                {/* Name */}
-                <div className="flex items-center gap-3">
-                  <span className="w-5 text-gray-400">{i + 1}</span>
-
-                  <span
-                    onClick={(e) => {
-                      e.preventDefault();
-                      toggleWatchlist(coin.symbol);
-                    }}
-                    className="cursor-pointer"
-                  >
-                    {isSaved ? "⭐" : "☆"}
-                  </span>
-
+            <Link key={coin.symbol} to={`/trade/${coin.symbol}`} style={link}>
+              <div style={row}>
+                <div style={nameSection}>
                   <img
-                    src={`https://cryptoicons.org/api/icon/${coinSymbol}/24`}
+                    src={iconSources[0]}
                     alt={coinSymbol}
-                    className="w-5 h-5"
+                    style={icon}
+                    onError={(e) => {
+                      const sources = iconSources;
+                      const currentIndex = sources.indexOf(e.target.src);
+                      if (currentIndex < sources.length - 1) {
+                        e.target.src = sources[currentIndex + 1]; // try next source
+                      } else {
+                        e.target.src = `https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@master/svg/color/generic.svg`;
+                      }
+                    }}
                   />
-
-                  <span className="font-medium">{coin.symbol}</span>
+                  <span>
+                    {coin.symbol}
+                  </span>
                 </div>
 
-                {/* Price */}
-                <span className="tabular-nums">
-                  ${Number(coin.lastPrice).toFixed(4)}
-                </span>
+                <span>${Number(coin.lastPrice).toFixed(4)}</span>
 
-                {/* Change */}
                 <span
-                  className={change > 0 ? "text-[#16c784]" : "text-[#ea3943]"}
+                  style={{
+                    color: change > 0 ? "#16c784" : "#ea3943",
+                  }}
                 >
                   {change}%
                 </span>
@@ -108,3 +65,56 @@ export default function MarketCard({ title }) {
     </div>
   );
 }
+
+const card = {
+  background: "#0f1116",
+  padding: "20px",
+  borderRadius: "4px",
+  width: "350px",
+  color: "white",
+  height: "100%",
+  minHeight: "560px",
+  overflow: "hidden",
+};
+
+const list = {
+  maxHeight: "520px",
+  overflowY: "auto",
+  overflowX: "hidden",
+};
+
+const header = {
+  color: "#FFF",
+  display: "grid",
+  gridTemplateColumns: "1fr 1fr 1fr",
+  opacity: 0.6,
+  marginBottom: "10px",
+  padding: "0 10px",
+};
+
+const row = {
+  display: "grid",
+  gridTemplateColumns: "2fr 1fr 1fr",
+  gap: "10px",
+  cursor: "pointer",
+  borderBottom: "1px solid #1e1e1e",
+  alignItems: "center",
+};
+
+const nameSection = {
+  display: "flex",
+  alignItems: "center",
+  gap: "8px",
+};
+
+const icon = {
+  width: "20px",
+  height: "20px",
+};
+
+const link = {
+  textDecoration: "none",
+  color: "inherit",
+};
+
+
