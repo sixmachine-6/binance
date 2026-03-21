@@ -10,6 +10,8 @@ import Trade from "./pages/Trade";
 import Watchlist from "./pages/Watchlist";
 import ProtectedRoute from "./ui/ProtectedRoute";
 import AppLayout from "./ui/AppLayout";
+import { TradeProvider } from "./context/TradeContext";
+import Portfolio from "./pages/Portfolio";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -23,32 +25,34 @@ const queryClient = new QueryClient({
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <WatchlistProvider>
-        <BrowserRouter>
-          <Routes>
-            {/* Redirect */}
-            <Route path="/" element={<Navigate to="/dashboard" />} />
+      <TradeProvider>
+        <WatchlistProvider>
+          <BrowserRouter>
+            <Routes>
+              {/* Redirect */}
+              <Route path="/" element={<Navigate to="/dashboard" />} />
 
-            {/* Public Routes */}
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
+              {/* Public Routes */}
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<Signup />} />
 
-            {/* Protected Routes */}
-            <Route
-              element={
-                <ProtectedRoute>
-                  <AppLayout />
-                </ProtectedRoute>
-              }
-            >
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/trade/:symbol" element={<Trade />} />
-              <Route path="/watchlist" element={<Watchlist />} />
-            </Route>
-          </Routes>
-        </BrowserRouter>
-      </WatchlistProvider>
-
+              {/* Protected Routes */}
+              <Route
+                element={
+                  <ProtectedRoute>
+                    <AppLayout />
+                  </ProtectedRoute>
+                }
+              >
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/trade/:symbol" element={<Trade />} />
+                <Route path="/watchlist" element={<Watchlist />} />
+                <Route path="/portfolio" element={<Portfolio />} />
+              </Route>
+            </Routes>
+          </BrowserRouter>
+        </WatchlistProvider>
+      </TradeProvider>
       <ReactQueryDevtools />
     </QueryClientProvider>
   );

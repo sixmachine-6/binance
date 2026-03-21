@@ -4,44 +4,34 @@ import Chart from "../features/trade/Chart";
 import MarketSidebar from "../features/trade/MarketSidebar";
 import PairHeader from "../features/trade/PairHeader";
 import MarketTrades from "../features/trade/MarketTrades";
+import TradePanel from "../features/trade/TradePanel";
 
 export default function Trade() {
   const { symbol } = useParams();
 
   return (
-    <div style={page}>
+    <div className="h-screen flex flex-col bg-[#0f1116] text-white">
       <PairHeader symbol={symbol} />
 
-      <div style={layout}>
+      <div className="grid grid-cols-[300px_1fr_320px] flex-1">
+        {/* ORDER BOOK */}
         <OrderBook symbol={symbol} />
 
-        <Chart symbol={symbol} />
+        {/* CENTER AREA */}
+        <div className="flex flex-col">
+          <Chart symbol={symbol} />
 
-        <div style={rightPanel}>
+          {/* BUY / SELL PANEL */}
+          <TradePanel symbol={symbol} />
+        </div>
+
+        {/* RIGHT PANEL */}
+        <div className="flex flex-col border-l border-gray-800">
           <MarketSidebar />
+
           <MarketTrades symbol={symbol} />
         </div>
       </div>
     </div>
   );
 }
-
-const page = {
-  height: "100vh",
-  display: "flex",
-  flexDirection: "column",
-  background: "#0f1116",
-  color: "white",
-};
-
-const layout = {
-  display: "grid",
-  gridTemplateColumns: "300px 1fr 320px",
-  flex: 1,
-};
-
-const rightPanel = {
-  display: "flex",
-  flexDirection: "column",
-  borderLeft: "1px solid #1e1e1e",
-};

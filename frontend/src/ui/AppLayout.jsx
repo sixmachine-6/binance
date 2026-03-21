@@ -1,5 +1,6 @@
 import { Outlet } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import Sidebar from "./Sidebar";
 
 export default function AppLayout() {
   return (
@@ -12,12 +13,7 @@ export default function AppLayout() {
       {/* Main Body */}
       <div className="grid grid-cols-[220px_1fr]">
         {/* Sidebar */}
-        <aside className="bg-gray-900 text-white p-5">
-          <nav className="space-y-4">
-            <p className="cursor-pointer hover:text-gray-400">Dashboard</p>
-            <p className="cursor-pointer hover:text-gray-400">Watchlist</p>
-          </nav>
-        </aside>
+        <Sidebar />
 
         {/* Page Content */}
         <main className="p-6 overflow-y-auto bg-gray-100">
