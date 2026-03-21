@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import { useWatchlist } from "../../context/WatchlistContext";
+import { useWatchlist } from "../../hooks/useWatchlist";
 import { useMarketData } from "../../hooks/useMarketData";
 
 export default function MarketCard({ title }) {
-  const { watchlist, toggleWatchlist } = useWatchlist();
+  const { watchlist = [], toggleWatchlist } = useWatchlist();
   const [filter, setFilter] = useState("CRYPTO");
 
   const { data: coins = [], isLoading } = useMarketData(filter);
@@ -38,15 +38,19 @@ export default function MarketCard({ title }) {
       <div className="max-h-[520px] overflow-y-auto scrollbar-hide">
         {isLoading && <p className="text-gray-400">Loading...</p>}
 
+        {!isLoading && coins.length === 0 && (
+          <p className="text-gray-400">No market data</p>
+        )}
+
         {coins.slice(0, 20).map((coin, i) => {
-          const change = Number(coin.priceChangePercent).toFixed(2);
+          const change = Number(coin.priceChangePercent || 0).toFixed(2);
 
           const coinSymbol = coin.symbol
-            .replace("USDT", "")
-            .replace("BTC", "")
-            .replace("ETH", "")
-            .replace("BNB", "")
-            .toLowerCase();
+            ?.replace("USDT", "")
+            ?.replace("BTC", "")
+            ?.replace("ETH", "")
+            ?.replace("BNB", "")
+            ?.toLowerCase();
 
           const isSaved = watchlist.includes(coin.symbol);
 
@@ -57,9 +61,11 @@ export default function MarketCard({ title }) {
               className="no-underline text-inherit"
             >
               <div className="grid grid-cols-[2fr_1fr_1fr] items-center p-2.5 cursor-pointer border-b border-[#1e1e1e] hover:bg-[#151821] transition">
+                {/* Left section */}
                 <div className="flex items-center gap-3">
                   <span className="w-5 text-gray-400">{i + 1}</span>
 
+                  {/* Watchlist toggle */}
                   <span
                     onClick={(e) => {
                       e.preventDefault();
@@ -70,6 +76,7 @@ export default function MarketCard({ title }) {
                     {isSaved ? "⭐" : "☆"}
                   </span>
 
+                  {/* Coin icon */}
                   <img
                     src={`https://cryptoicons.org/api/icon/${coinSymbol}/24`}
                     alt={coinSymbol}
@@ -79,10 +86,12 @@ export default function MarketCard({ title }) {
                   <span className="font-medium">{coin.symbol}</span>
                 </div>
 
+                {/* Price */}
                 <span className="tabular-nums">
-                  ${Number(coin.lastPrice).toFixed(4)}
+                  ${Number(coin.lastPrice || 0).toFixed(4)}
                 </span>
 
+                {/* Change */}
                 <span
                   className={change > 0 ? "text-[#16c784]" : "text-[#ea3943]"}
                 >

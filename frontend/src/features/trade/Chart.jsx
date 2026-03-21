@@ -6,6 +6,7 @@ import {
   BarSeries,
 } from "lightweight-charts";
 import { useQuery } from "@tanstack/react-query";
+import TradePanel from "./TradePanel";
 
 const fetchCandles = async (symbol) => {
   const res = await fetch(
@@ -20,6 +21,7 @@ export default function Chart({ symbol }) {
   const seriesRef = useRef(null);
 
   const [chartType, setChartType] = useState("candlestick");
+  const [price, setPrice] = useState(0);
 
   const { data } = useQuery({
     queryKey: ["candles", symbol],
@@ -27,7 +29,7 @@ export default function Chart({ symbol }) {
     refetchInterval: 2000,
   });
 
-  // Create chart once
+  // Create chart
   useEffect(() => {
     const chart = createChart(chartContainer.current, {
       height: 500,
@@ -96,10 +98,16 @@ export default function Chart({ symbol }) {
     }
 
     seriesRef.current.setData(formattedData);
+
+    // set latest price
+    const lastCandle = data[data.length - 1];
+    if (lastCandle) {
+      setPrice(parseFloat(lastCandle[4]));
+    }
   }, [data, chartType]);
 
   return (
-    <div>
+    <div className="flex flex-col gap-4">
       {/* Chart selector */}
       <div style={{ marginBottom: "10px" }}>
         <select
@@ -114,6 +122,9 @@ export default function Chart({ symbol }) {
 
       {/* Chart */}
       <div ref={chartContainer} style={{ width: "100%", height: "500px" }} />
+
+      {/* Trade Panel */}
+      <TradePanel symbol={symbol} price={price} />
     </div>
   );
 }

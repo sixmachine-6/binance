@@ -1,5 +1,7 @@
 const express = require("express");
 const userRouter = require("./routes/userRoutes");
+const tradeRoutes = require("./routes/tradeRoutes");
+const watchlistRoutes = require("./routes/watchlistRoutes");
 const cookieParser = require("cookie-parser");
 const path = require("path");
 const cors = require("cors");
@@ -14,5 +16,8 @@ app.use(
     credentials: true,
   }),
 );
+
+app.use("/api/v1/watchlist", watchlistRoutes);
+app.use("/api/v1/trades", tradeRoutes);
 app.use("/api/v1/users", userRouter);
 module.exports = app;

@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const bcrypt = require("bcryptjs");
+const Trade = require("./tradeModel");
 
 const userSchema = new mongoose.Schema({
   phoneNumber: {
@@ -7,13 +7,32 @@ const userSchema = new mongoose.Schema({
     unique: true,
     sparse: true,
   },
+
   createdAt: {
     type: Date,
     default: Date.now,
   },
+
+  balance: {
+    type: Number,
+    default: 10000,
+  },
+
+  // add positions
+  positions: {
+    type: Map,
+    of: Number,
+    default: {},
+  },
+
+  trades: [Trade],
+
+  watchlist: {
+    type: [String],
+    default: [],
+  },
 });
 
-// Ensure either email OR phoneNumber is provide
 const User = mongoose.model("User", userSchema);
 
 module.exports = User;

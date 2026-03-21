@@ -20,9 +20,6 @@ export default function Trade() {
         {/* CENTER AREA */}
         <div className="flex flex-col">
           <Chart symbol={symbol} />
-
-          {/* BUY / SELL PANEL */}
-          <TradePanel symbol={symbol} />
         </div>
 
         {/* RIGHT PANEL */}

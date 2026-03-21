@@ -52,6 +52,19 @@ export default function Sidebar() {
           <Wallet size={20} />
           Portfolio
         </NavLink>
+        <NavLink
+          to="/reports"
+          className={({ isActive }) =>
+            `flex items-center gap-3 p-3 rounded-lg transition ${
+              isActive
+                ? "bg-gray-800 text-white"
+                : "text-gray-400 hover:bg-gray-800 hover:text-white"
+            }`
+          }
+        >
+          <Wallet size={20} />
+          Reports
+        </NavLink>
       </nav>
 
       {/* Footer */}

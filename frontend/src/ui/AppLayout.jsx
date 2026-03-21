@@ -15,7 +15,7 @@ export default function AppLayout() {
         <Sidebar />
 
         {/* Page Content */}
-        <main className=" overflow-y-auto bg-gray-100">
+        <main className="h-screen overflow-y-auto bg-gray-100">
           <Outlet />
         </main>
       </div>
