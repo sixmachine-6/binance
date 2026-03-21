@@ -1,0 +1,33 @@
+@import "tailwindcss";
+
+.hide-scrollbar {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE & Edge */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
+}
+.input-style {
+  @apply w-full px-4 py-3 rounded-xl 
+  bg-slate-700 text-white placeholder-gray-400 
+  border border-slate-600 outline-none 
+  transition-all duration-300;
+}
+
+.input-style:focus {
+  @apply border-yellow-400 ring-2 ring-yellow-400;
+}
+
+.input-style:hover {
+  @apply border-slate-400;
+}
+
+/* Validation States */
+.input-style.error {
+  @apply border-red-500 ring-2 ring-red-500;
+}
+
+.input-style.success {
+  @apply border-green-500 ring-2 ring-green-500;
+}
