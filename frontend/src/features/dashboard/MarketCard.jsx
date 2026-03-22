@@ -68,8 +68,9 @@ export default function MarketCard({ title, sortBy = "volume" }) {
   const topCoins = sortedCoins.slice(0, 20);
 
   return (
-    <div className="bg-[#0f1116] p-3 rounded-[14px] text-white w-[320px]">
-      <div className="flex justify-between items-center mb-2">
+    <div className="bg-[#0f1116] p-4 rounded-xl text-white w-full shadow-lg border border-[#1e2329]">
+      {/* Header */}
+      <div className="flex justify-between items-center mb-3">
         <h3 className="font-semibold text-sm">{title}</h3>
 
         <select
@@ -84,14 +85,18 @@ export default function MarketCard({ title, sortBy = "volume" }) {
         </select>
       </div>
 
-      <div className="grid grid-cols-[1.6fr_1fr_1fr] opacity-60 mb-1 text-xs">
+      {/* Table Header */}
+      <div className="grid grid-cols-[2fr_1fr_1fr] text-xs text-gray-400 mb-2">
         <span>Name</span>
         <span>Price</span>
         <span>24h</span>
       </div>
 
-      <div className="max-h-[460px] overflow-y-auto custom-scroll">
-        {isLoading && <p className="text-gray-400">Loading market...</p>}
+      {/* Coin List */}
+      <div className="max-h-[420px] overflow-y-auto custom-scroll">
+        {isLoading && (
+          <p className="text-gray-400 text-sm">Loading market...</p>
+        )}
 
         {topCoins.map((coin, i) => {
           const symbol = coin.symbol || coin.s;
@@ -116,9 +121,10 @@ export default function MarketCard({ title, sortBy = "volume" }) {
               to={`/trade/${symbol}`}
               className="no-underline text-inherit"
             >
-              <div className="grid grid-cols-[1.6fr_1fr_1fr] items-center p-2 cursor-pointer border-b border-[#1e1e1e] hover:bg-[#151821] transition text-sm">
+              <div className="grid grid-cols-[2fr_1fr_1fr] items-center p-2 text-sm border-b border-[#1e1e1e] hover:bg-[#151821] transition">
+                {/* Coin Info */}
                 <div className="flex items-center gap-2">
-                  <span className="w-4 text-gray-400">{i + 1}</span>
+                  <span className="text-gray-500 text-xs w-4">{i + 1}</span>
 
                   <span
                     onClick={(e) => {
@@ -150,6 +156,7 @@ export default function MarketCard({ title, sortBy = "volume" }) {
                   <span className="font-medium">{symbol}</span>
                 </div>
 
+                {/* Price */}
                 <span className="tabular-nums">
                   $
                   {price < 0.01
@@ -159,6 +166,7 @@ export default function MarketCard({ title, sortBy = "volume" }) {
                       : price.toFixed(2)}
                 </span>
 
+                {/* Change */}
                 <span
                   className={change > 0 ? "text-[#16c784]" : "text-[#ea3943]"}
                 >
