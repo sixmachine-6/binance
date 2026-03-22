@@ -10,7 +10,7 @@ export default function Trade() {
   const { symbol } = useParams();
 
   return (
-    <div className="h-screen flex flex-col bg-[#0f1116] text-white overflow-hidden">
+    <div className="h-screen flex flex-col bg-[#0f1116] text-white overflow-hidden p-6">
       <PairHeader symbol={symbol} />
 
       <div className="grid grid-cols-[300px_1fr_320px] flex-1 min-h-0">
