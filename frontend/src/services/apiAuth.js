@@ -9,6 +9,7 @@ export async function signupAccount(data) {
   return res.data;
 }
 
+<<<<<<< HEAD
 export async function loginAccount({ phone }) {
   // 1. Strictly 10-digit phone validation
   const phoneRegex = /^[0-9]{10}$/;
@@ -37,4 +38,17 @@ export async function loginAccount({ phone }) {
   }
 
   return data;
+=======
+export async function loginAccount(data) {
+  if (!data.firebaseToken) {
+    throw new Error("Firebase token missing");
+  }
+
+  const res = await axios.post(
+    "http://127.0.0.1:5000/api/v1/users/login",
+    data,
+  );
+  console.log(res);
+  return res.data;
+>>>>>>> e37621d3d03161e4a30b16f7bc125385e0cce2b8
 }
