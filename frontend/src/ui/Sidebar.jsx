@@ -1,9 +1,12 @@
 import { NavLink } from "react-router-dom";
-import { LayoutDashboard, Star, Wallet } from "lucide-react";
+import { LayoutDashboard, Star, Wallet, Bell } from "lucide-react";
+import { useNotifications } from "../hooks/useNotification";
 
 export default function Sidebar() {
+  const { count } = useNotifications();
+
   return (
-    <div className="h-screen  bg-gray-950 text-white flex flex-col border-r border-gray-800">
+    <div className="h-screen bg-gray-950 text-white flex flex-col border-r border-gray-800">
       {/* Logo */}
       <div className="p-6 text-xl font-bold border-b border-gray-800">
         CryptoSim
@@ -52,6 +55,7 @@ export default function Sidebar() {
           <Wallet size={20} />
           Portfolio
         </NavLink>
+
         <NavLink
           to="/reports"
           className={({ isActive }) =>
@@ -64,6 +68,26 @@ export default function Sidebar() {
         >
           <Wallet size={20} />
           Reports
+        </NavLink>
+
+        {/* Notifications */}
+        <NavLink
+          to="/notifications"
+          className={({ isActive }) =>
+            `flex items-center gap-3 p-3 rounded-lg transition relative ${
+              isActive
+                ? "bg-gray-800 text-white"
+                : "text-gray-400 hover:bg-gray-800 hover:text-white"
+            }`
+          }
+        >
+          <Bell size={20} />
+          Notifications
+          {count > 0 && (
+            <span className="absolute right-3 bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
+              {count}
+            </span>
+          )}
         </NavLink>
       </nav>
 

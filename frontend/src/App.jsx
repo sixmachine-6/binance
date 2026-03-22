@@ -12,6 +12,7 @@ import AppLayout from "./ui/AppLayout";
 import Portfolio from "./pages/Portfolio";
 import { Toaster } from "react-hot-toast";
 import Reports from "./pages/Reports";
+import Notifications from "./pages/Notification";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -50,6 +51,7 @@ function App() {
             <Route path="/watchlist" element={<Watchlist />} />
             <Route path="/portfolio" element={<Portfolio />} />
             <Route path="/reports" element={<Reports />} />
+            <Route path="/notifications" element={<Notifications />} />
           </Route>
         </Routes>
       </BrowserRouter>

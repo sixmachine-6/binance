@@ -96,7 +96,7 @@ export default function MarketCard({ title, sortBy = "volume" }) {
       </div>
 
       {/* Coin List */}
-      <div className="max-h-[520px] overflow-y-auto scrollbar-hide">
+      <div className="max-h-[520px] overflow-y-auto custom-scroll">
         {isLoading && <p className="text-gray-400">Loading market...</p>}
 
         {topCoins.map((coin, i) => {
@@ -110,7 +110,6 @@ export default function MarketCard({ title, sortBy = "volume" }) {
             .replace(/USDT$|BTC$|ETH$|BNB$/i, "")
             .toLowerCase();
 
-          // ICON FALLBACK LOGIC
           const iconSources = [
             `https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@master/svg/color/${coinSymbol}.svg`,
             `https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@master/svg/white/${coinSymbol}.svg`,

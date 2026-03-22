@@ -2,6 +2,7 @@ const express = require("express");
 const userRouter = require("./routes/userRoutes");
 const tradeRoutes = require("./routes/tradeRoutes");
 const watchlistRoutes = require("./routes/watchlistRoutes");
+const notificationRoutes = require("./routes/notificationRoutes");
 const cookieParser = require("cookie-parser");
 const path = require("path");
 const cors = require("cors");
@@ -17,6 +18,7 @@ app.use(
   }),
 );
 
+app.use("/api/v1/notifications", notificationRoutes);
 app.use("/api/v1/watchlist", watchlistRoutes);
 app.use("/api/v1/trades", tradeRoutes);
 app.use("/api/v1/users", userRouter);
