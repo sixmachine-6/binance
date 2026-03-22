@@ -13,46 +13,6 @@ export default function OrderBook({ symbol }) {
     queryFn: () => fetchDepth(symbol),
     refetchInterval: 1000,
   });
-<<<<<<< HEAD
-
-  if (!data) return null;
-
-  let total = 0;
-
-  return (
-    <div style={container}>
-      <h3 style={{ marginBottom: 10 }}>Order Book</h3>
-
-      <div style={header}>
-        <span>Price (USDT)</span>
-        <span>Amount</span>
-        <span>Total</span>
-      </div>
-
-      {data.asks.slice(0, 10).map((a, i) => {
-        total += parseFloat(a[1]);
-
-        return (
-          <div key={i} style={row}>
-            <span style={{ color: "#ea3943" }}>{a[0]}</span>
-            <span>{a[1]}</span>
-            <span>{total.toFixed(3)}</span>
-          </div>
-        );
-      })}
-
-      {data.bids.slice(0, 10).map((b, i) => {
-        total += parseFloat(b[1]);
-
-        return (
-          <div key={i} style={row}>
-            <span style={{ color: "#16c784" }}>{b[0]}</span>
-            <span>{b[1]}</span>
-            <span>{total.toFixed(3)}</span>
-          </div>
-        );
-      })}
-=======
   if (!data) return null;
   let total = 0;
   return (
@@ -87,7 +47,6 @@ export default function OrderBook({ symbol }) {
           );
         })}
       </div>
->>>>>>> e37621d3d03161e4a30b16f7bc125385e0cce2b8
     </div>
   );
 }

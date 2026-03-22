@@ -1,122 +1,89 @@
-import { useRef } from "react";
-<<<<<<< HEAD
-import { useTrade } from "../../context/TradeContext";
 
-export default function TradePanel({ symbol, price }) {
-  const { buy, sell, balance, positions } = useTrade();
-
-  const amountRef = useRef();
-
-=======
+import { useRef, useState } from "react";
 import { useExecuteTrade } from "../../hooks/useExecuteTrade";
 
 export default function TradePanel({ symbol, price }) {
   const amountRef = useRef();
+  const { mutate, isLoading } = useExecuteTrade();
 
-  const { mutate } = useExecuteTrade();
+  const [error, setError] = useState("");
 
->>>>>>> e37621d3d03161e4a30b16f7bc125385e0cce2b8
-  const handleBuy = () => {
+  const handleTrade = (side) => {
     const amount = Number(amountRef.current.value);
 
-    if (!amount) return;
+    if (!amount || amount <= 0) {
+      setError("Enter a valid amount");
+      return;
+    }
 
-<<<<<<< HEAD
-    buy(symbol, price, amount);
-=======
+    setError("");
+
     mutate({
       symbol,
       price,
       quantity: amount,
-      side: "BUY",
+      side,
     });
->>>>>>> e37621d3d03161e4a30b16f7bc125385e0cce2b8
 
     amountRef.current.value = "";
   };
 
-  const handleSell = () => {
-    const amount = Number(amountRef.current.value);
-
-    if (!amount) return;
-
-<<<<<<< HEAD
-    sell(symbol, price, amount);
-=======
-    mutate({
-      symbol,
-      price,
-      quantity: amount,
-      side: "SELL",
-    });
->>>>>>> e37621d3d03161e4a30b16f7bc125385e0cce2b8
-
-    amountRef.current.value = "";
-  };
-
-<<<<<<< HEAD
-  const coinBalance = positions[symbol] || 0;
-
   return (
-    <div className="bg-gray-900 rounded-xl p-6 w-80 space-y-6">
-      {/* HEADER */}
-      <div className="flex justify-between text-sm text-gray-400">
-        <span>Market</span>
-        <span>{symbol}</span>
+    <div className="bg-[#0b0e11] border border-gray-800 rounded-2xl p-5 w-full max-w-sm space-y-5 shadow-lg">
+
+      {/* Price */}
+      <div className="flex justify-between items-center">
+        <span className="text-gray-400 text-sm">Current Price</span>
+        <span className="text-lg font-semibold text-white">
+          ${price?.toFixed(2)}
+        </span>
       </div>
 
-      {/* PRICE */}
-      <div className="text-lg font-semibold">Price: ${price}</div>
+      {/* Input */}
+      <div>
+        <input
+          ref={amountRef}
+          type="number"
+          placeholder="Enter amount"
+          className="w-full bg-[#1e2329] text-white p-3 rounded-lg outline-none border border-gray-700 focus:border-yellow-400"
+        />
 
-      {/* INPUT */}
-=======
-  return (
-    <div className="bg-gray-900 rounded-xl p-6 w-full space-y-6">
-      <div className="text-lg font-semibold">Price: ${price}</div>
-
->>>>>>> e37621d3d03161e4a30b16f7bc125385e0cce2b8
-      <input
-        ref={amountRef}
-        type="number"
-        placeholder="Amount"
-        className="w-full bg-gray-800 p-3 rounded-lg outline-none"
-      />
-
-<<<<<<< HEAD
-      {/* BALANCE */}
-      <div className="text-sm text-gray-400">
-        Balance: ${balance.toFixed(2)}
+        {error && (
+          <p className="text-red-400 text-xs mt-1">{error}</p>
+        )}
       </div>
 
-      {/* COIN HOLDINGS */}
-      <div className="text-sm text-gray-400">
-        {symbol} Holdings: {coinBalance}
+      {/* Quick buttons */}
+      <div className="flex gap-2">
+        {[25, 50, 75, 100].map((p) => (
+          <button
+            key={p}
+            onClick={() => {
+              amountRef.current.value = p;
+            }}
+            className="flex-1 text-xs bg-gray-800 hover:bg-gray-700 py-1 rounded"
+          >
+            {p}%
+          </button>
+        ))}
       </div>
 
-      {/* BUTTONS */}
-      <div className="flex gap-4">
+      {/* Buttons */}
+      <div className="flex gap-3">
         <button
-          onClick={handleBuy}
-          className="flex-1 bg-green-500 hover:bg-green-600 p-3 rounded-lg font-semibold"
-=======
-      <div className="flex gap-4">
-        <button
-          onClick={handleBuy}
-          className="flex-1 bg-green-500 p-3 rounded-lg"
->>>>>>> e37621d3d03161e4a30b16f7bc125385e0cce2b8
+          onClick={() => handleTrade("BUY")}
+          disabled={isLoading}
+          className="flex-1 bg-green-500 hover:bg-green-600 py-3 rounded-lg font-semibold transition disabled:opacity-50"
         >
-          Buy
+          {isLoading ? "Processing..." : "Buy"}
         </button>
 
         <button
-          onClick={handleSell}
-<<<<<<< HEAD
-          className="flex-1 bg-red-500 hover:bg-red-600 p-3 rounded-lg font-semibold"
-=======
-          className="flex-1 bg-red-500 p-3 rounded-lg"
->>>>>>> e37621d3d03161e4a30b16f7bc125385e0cce2b8
+          onClick={() => handleTrade("SELL")}
+          disabled={isLoading}
+          className="flex-1 bg-red-500 hover:bg-red-600 py-3 rounded-lg font-semibold transition disabled:opacity-50"
         >
-          Sell
+          {isLoading ? "Processing..." : "Sell"}
         </button>
       </div>
     </div>
