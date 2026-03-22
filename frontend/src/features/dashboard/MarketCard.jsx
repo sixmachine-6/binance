@@ -13,14 +13,12 @@ export default function MarketCard({ title, sortBy = "volume" }) {
 
   const [liveCoins, setLiveCoins] = useState([]);
 
-  // Load initial coins from React Query
   useEffect(() => {
     if (coins.length) {
       setLiveCoins(coins);
     }
   }, [coins]);
 
-  // WebSocket price updates
   useEffect(() => {
     wsRef.current = new WebSocket(
       "wss://data-stream.binance.vision/ws/!ticker@arr",
@@ -53,7 +51,6 @@ export default function MarketCard({ title, sortBy = "volume" }) {
     return () => wsRef.current?.close();
   }, []);
 
-  // Sorting logic
   const sortedCoins = [...liveCoins].sort((a, b) => {
     if (sortBy === "gainers")
       return (
@@ -71,15 +68,14 @@ export default function MarketCard({ title, sortBy = "volume" }) {
   const topCoins = sortedCoins.slice(0, 20);
 
   return (
-    <div className="bg-[#0f1116] p-5 rounded-[14px] text-white">
-      {/* Title + Filter */}
-      <div className="flex justify-between items-center mb-3">
-        <h3 className="font-semibold">{title}</h3>
+    <div className="bg-[#0f1116] p-3 rounded-[14px] text-white w-[320px]">
+      <div className="flex justify-between items-center mb-2">
+        <h3 className="font-semibold text-sm">{title}</h3>
 
         <select
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
-          className="bg-[#151821] text-sm px-2 py-1 rounded border border-[#1e1e1e]"
+          className="bg-[#151821] text-xs px-2 py-1 rounded border border-[#1e1e1e]"
         >
           <option value="CRYPTO">USDT</option>
           <option value="BTC">BTC</option>
@@ -88,22 +84,18 @@ export default function MarketCard({ title, sortBy = "volume" }) {
         </select>
       </div>
 
-      {/* Header */}
-      <div className="grid grid-cols-[2fr_1fr_1fr] opacity-60 mb-2 text-sm">
+      <div className="grid grid-cols-[1.6fr_1fr_1fr] opacity-60 mb-1 text-xs">
         <span>Name</span>
         <span>Price</span>
-        <span>24h Change</span>
+        <span>24h</span>
       </div>
 
-      {/* Coin List */}
-      <div className="max-h-[520px] overflow-y-auto custom-scroll">
+      <div className="max-h-[460px] overflow-y-auto custom-scroll">
         {isLoading && <p className="text-gray-400">Loading market...</p>}
 
         {topCoins.map((coin, i) => {
           const symbol = coin.symbol || coin.s;
-
           const change = Number(coin.priceChangePercent).toFixed(2);
-
           const price = Number(coin.lastPrice);
 
           const coinSymbol = symbol
@@ -124,12 +116,10 @@ export default function MarketCard({ title, sortBy = "volume" }) {
               to={`/trade/${symbol}`}
               className="no-underline text-inherit"
             >
-              <div className="grid grid-cols-[2fr_1fr_1fr] items-center p-2.5 cursor-pointer border-b border-[#1e1e1e] hover:bg-[#151821] transition">
-                {/* Left section */}
-                <div className="flex items-center gap-3">
-                  <span className="w-5 text-gray-400">{i + 1}</span>
+              <div className="grid grid-cols-[1.6fr_1fr_1fr] items-center p-2 cursor-pointer border-b border-[#1e1e1e] hover:bg-[#151821] transition text-sm">
+                <div className="flex items-center gap-2">
+                  <span className="w-4 text-gray-400">{i + 1}</span>
 
-                  {/* Watchlist toggle */}
                   <span
                     onClick={(e) => {
                       e.preventDefault();
@@ -140,7 +130,6 @@ export default function MarketCard({ title, sortBy = "volume" }) {
                     {isSaved ? "⭐" : "☆"}
                   </span>
 
-                  {/* Icon */}
                   <img
                     src={iconSources[0]}
                     alt={coinSymbol}
@@ -161,7 +150,6 @@ export default function MarketCard({ title, sortBy = "volume" }) {
                   <span className="font-medium">{symbol}</span>
                 </div>
 
-                {/* Price */}
                 <span className="tabular-nums">
                   $
                   {price < 0.01
@@ -171,7 +159,6 @@ export default function MarketCard({ title, sortBy = "volume" }) {
                       : price.toFixed(2)}
                 </span>
 
-                {/* Change */}
                 <span
                   className={change > 0 ? "text-[#16c784]" : "text-[#ea3943]"}
                 >

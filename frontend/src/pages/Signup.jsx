@@ -25,6 +25,14 @@ const Signup = () => {
   const isEmailValid = emailRegex.test(email);
 
   useEffect(() => {
+    const user = auth.currentUser;
+
+    if (user) {
+      navigate("/dashboard");
+    }
+  }, []);
+
+  useEffect(() => {
     return () => {
       if (window.recaptchaVerifier) {
         window.recaptchaVerifier.clear();

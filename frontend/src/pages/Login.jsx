@@ -19,6 +19,14 @@ function Login() {
   const phoneRegex = /^[0-9]{10}$/;
   const isPhoneValid = phoneRegex.test(phone);
 
+  // Redirect if already logged in
+  useEffect(() => {
+    const user = auth.currentUser;
+
+    if (user) {
+      navigate("/dashboard");
+    }
+  }, []);
   // Cleanup recaptcha
   useEffect(() => {
     return () => {
