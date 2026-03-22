@@ -1,7 +1,7 @@
 import axios from "axios";
 import { getAuth } from "firebase/auth";
 
-const BASE = "http://127.0.0.1:5000/api/v1/watchlist";
+const BASE = "https://crypto-3wn4.onrender.com/api/v1/watchlist";
 
 async function getToken() {
   const user = getAuth().currentUser;

@@ -2,7 +2,7 @@ import axios from "axios";
 
 export async function signupAccount(data) {
   const res = await axios.post(
-    "http://127.0.0.1:5000/api/v1/users/signup",
+    "https://crypto-3wn4.onrender.com/api/v1/users/signup",
     data,
   );
   console.log(res);
@@ -15,7 +15,7 @@ export async function loginAccount(data) {
   }
 
   const res = await axios.post(
-    "http://127.0.0.1:5000/api/v1/users/login",
+    "https://crypto-3wn4.onrender.com/api/v1/users/login",
     data,
   );
   console.log(res);

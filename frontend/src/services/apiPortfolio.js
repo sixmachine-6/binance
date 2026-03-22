@@ -9,7 +9,7 @@ export async function getPortfolio() {
   const firebaseToken = await user.getIdToken();
 
   const res = await axios.post(
-    "http://127.0.0.1:5000/api/v1/trades/portfolio",
+    "https://crypto-3wn4.onrender.com/api/v1/trades/portfolio",
     { firebaseToken },
   );
   console.log(res);
