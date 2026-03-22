@@ -1,62 +1,62 @@
 from utils import get_response_llm, create_client
+from data.market_data import get_market_data
 import json
 
 
-def trade_signal_agent(messages):
-    client = create_client()
+def trade_signal_agent(messages,symbol):
 
-    system_prompt = """
-You are TradeSignalAgent, an AI trading assistant.
+    client=create_client()
 
-Your task:
-Generate a crypto trade signal based on the user's request.
+    market=get_market_data(symbol)
 
-Your response must include:
-- decision (BUY / SELL / HOLD)
-- entry price
-- take profit
-- stop loss
-- short reasoning
-
-Output format (JSON only):
-
-{
-"chain_of_thought": "Explain briefly how you generated the trade signal.",
-"decision": "BUY or SELL or HOLD",
-"entry_price": "",
-"take_profit": "",
-"stop_loss": "",
-"message": "Short explanation of the trade signal."
-}
-
-Rules:
-1. Respond ONLY with JSON.
-2. Do NOT write anything outside JSON.
-3. Do NOT use code fences.
+    market_context=f"""
+Symbol: {market['symbol']}
+Price: {market['price']}
+RSI: {market['rsi']}
+Support: {market['support']}
+Resistance: {market['resistance']}
 """
 
-    input_message = [{"role": "system", "content": system_prompt}] + messages[-3:]
+    system_prompt="""
+You are a crypto trading strategist.
 
-    response = get_response_llm(client, input_message)
+Generate trade signal.
 
-    return pre_process_output(response)
+Rules
+Risk reward minimum 1:2
 
+Output JSON
 
-def pre_process_output(response):
+{
+"decision":"BUY or SELL or HOLD",
+"entry_price":"",
+"take_profit":"",
+"stop_loss":"",
+"message":""
+}
+"""
+
+    input_message=[
+        {"role":"system","content":system_prompt},
+        {"role":"system","content":market_context}
+    ]+messages[-2:]
+
+    response=get_response_llm(client,input_message)
+
     try:
-        output = json.loads(response)
+        output=json.loads(response)
     except:
-        output = {
-            "decision": "HOLD",
-            "message": "Unable to generate trade signal."
+        output={
+            "decision":"HOLD",
+            "message":"No signal"
         }
 
     return {
-        "role": "assistant",
-        "content": output["message"],
-        "decision": output["decision"],
-        "entry_price": output.get("entry_price"),
-        "take_profit": output.get("take_profit"),
-        "stop_loss": output.get("stop_loss"),
-        "agent": "trade_signal_agent"
+        "role":"assistant",
+        "content":output.get("message"),
+        "decision":output.get("decision"),
+        "entry_price":output.get("entry_price"),
+        "take_profit":output.get("take_profit"),
+        "stop_loss":output.get("stop_loss"),
+        "agent":"trade_signal_agent"
     }

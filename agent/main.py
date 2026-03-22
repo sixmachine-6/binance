@@ -6,8 +6,12 @@ from agents import (
     classify_response_agent,
     market_analysis_agent,
     trade_signal_agent,
-    risk_management_agent
+    risk_management_agent,
+    judge_agent,
+    general_crypto_agent
 )
+
+from utils.symbol_extractor import extract_symbol
 
 app = FastAPI()
 
@@ -15,43 +19,49 @@ app = FastAPI()
 @app.post("/chat")
 async def chat_endpoint(messages: List[Dict]):
 
-    print("Incoming messages:", messages)
+    # 1 Guard
+    guard = guard_other_agents(messages)
 
-    # 1️⃣ Guard Agent
-    guard_output = guard_other_agents(messages)
+    if guard["decision"] == "not allowed":
+        return {"messages":[guard]}
 
-    if guard_output["decision"] == "not allowed":
-        messages.append(guard_output)
-        return {"messages": messages}
+    messages.append(guard)
 
-    messages.append(guard_output)
+    # 2 Classification
+    classification = classify_response_agent(messages)
+    messages.append(classification)
 
-    # 2️⃣ Classification Agent
-    classification_output = classify_response_agent(messages)
+    decision = classification["decision"]
 
-    messages.append(classification_output)
+    # 3 Routing
 
-    decision = classification_output["decision"]
+    if decision == "general_crypto_agent":
 
-    # 3️⃣ Route to correct agent
-    if decision == "market_analysis_agent":
-        agent_output = market_analysis_agent(messages)
+        response = general_crypto_agent(messages)
+        messages.append(response)
 
-    elif decision == "trade_signal_agent":
-        agent_output = trade_signal_agent(messages)
+        return {"messages":messages}
 
-    elif decision == "risk_management_agent":
-        agent_output = risk_management_agent(messages)
+    if decision == "risk_management_agent":
 
-    else:
-        agent_output = {
-            "role": "assistant",
-            "content": "I could not determine the correct trading agent.",
-            "agent": "system"
-        }
+        risk = risk_management_agent(messages)
+        messages.append(risk)
 
-    messages.append(agent_output)
+        return {"messages":messages}
 
-    return {
-        "messages": messages
-    }
+    # 4 If market or trade → need symbol
+    symbol = extract_symbol(messages)
+
+    analysis = market_analysis_agent(messages,symbol)
+    messages.append(analysis)
+
+    signal = trade_signal_agent(messages,symbol)
+    messages.append(signal)
+
+    risk = risk_management_agent(messages)
+    messages.append(risk)
+
+    final = judge_agent(messages)
+    messages.append(final)
+
+    return {"messages":messages}

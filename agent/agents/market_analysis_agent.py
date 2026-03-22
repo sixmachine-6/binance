@@ -1,52 +1,51 @@
 from utils import get_response_llm, create_client
+from data.market_data import get_market_data
 import json
 
 
-def market_analysis_agent(messages):
+def market_analysis_agent(messages, symbol):
+
     client = create_client()
 
-    system_prompt = """
-You are MarketAnalysisAgent, an AI specialized in cryptocurrency market analysis.
+    market = get_market_data(symbol)
 
-Your job:
-Analyze the user's question and provide insights about market conditions.
-
-You can discuss:
-- price trends
-- RSI
-- MACD
-- support and resistance
-- momentum
-- market sentiment
-
-Output format (JSON only):
-
-{
-"chain_of_thought": "Explain briefly how you analyzed the market question.",
-"analysis": "Write the market analysis here."
-}
-
-Rules:
-1. Respond ONLY with JSON.
-2. Do NOT write anything outside the JSON.
-3. Do NOT use code fences.
+    market_context = f"""
+Market Data
+Symbol: {market['symbol']}
+Price: {market['price']}
+RSI: {market['rsi']}
+Support: {market['support']}
+Resistance: {market['resistance']}
 """
 
-    input_message = [{"role": "system", "content": system_prompt}] + messages[-3:]
+    system_prompt = """
+You are a cryptocurrency market analyst.
 
-    response = get_response_llm(client, input_message)
+Analyze the market conditions using the given data.
+Discuss trend, RSI condition and price location.
+Return short analysis.
 
-    return pre_process_output(response)
+Output JSON:
 
+{
+"analysis": ""
+}
+"""
 
-def pre_process_output(response):
+    input_message = [
+        {"role":"system","content":system_prompt},
+        {"role":"system","content":market_context}
+    ] + messages[-2:]
+
+    response = get_response_llm(client,input_message)
+
     try:
-        output = json.loads(response)
+        output=json.loads(response)
     except:
-        output = {"analysis": "Unable to analyze the market at the moment."}
+        output={"analysis":"Unable to analyze"}
 
     return {
-        "role": "assistant",
-        "content": output["analysis"],
-        "agent": "market_analysis_agent"
+        "role":"assistant",
+        "content":output["analysis"],
+        "agent":"market_analysis_agent"
     }

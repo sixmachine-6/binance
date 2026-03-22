@@ -7,14 +7,6 @@ import WinRateChart from "../features/performance/WinRateChart";
 export default function Portfolio() {
   const { data, isLoading } = usePortfolio();
 
-  if (isLoading) {
-    return (
-      <div className="p-6 text-white">
-        <p>Loading portfolio...</p>
-      </div>
-    );
-  }
-
   const balance = data?.balance ?? 0;
   const positions = data?.positions ?? {};
   const trades = data?.trades ?? [];
@@ -74,6 +66,16 @@ export default function Portfolio() {
   const winRate =
     totalTrades === 0 ? 0 : ((winningTrades / totalTrades) * 100).toFixed(2);
 
+  // -------- Loading state --------
+
+  if (isLoading) {
+    return (
+      <div className="p-6 text-white">
+        <p>Loading portfolio...</p>
+      </div>
+    );
+  }
+
   // -------- No trades state --------
 
   if (trades.length === 0) {
@@ -132,6 +134,7 @@ export default function Portfolio() {
 
                 <div className="flex gap-6">
                   <span>{qty}</span>
+
                   <span className="text-gray-400">
                     ${prices[coin]?.toFixed(2) ?? "0.00"}
                   </span>
