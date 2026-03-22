@@ -52,6 +52,8 @@ export default function Sidebar() {
           <Wallet size={20} />
           Portfolio
         </NavLink>
+<<<<<<< HEAD
+=======
         <NavLink
           to="/reports"
           className={({ isActive }) =>
@@ -65,6 +67,7 @@ export default function Sidebar() {
           <Wallet size={20} />
           Reports
         </NavLink>
+>>>>>>> e37621d3d03161e4a30b16f7bc125385e0cce2b8
       </nav>
 
       {/* Footer */}

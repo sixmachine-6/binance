@@ -38,6 +38,36 @@ exports.signup = async (req, res) => {
 
 exports.login = async (req, res) => {
   try {
+<<<<<<< HEAD
+    let { phone } = req.body;
+
+    if (!phone) {
+      return res.status(400).json({
+        status: "fail",
+        message: "Please provide phone number",
+      });
+    }
+
+    // Normalize phone number
+    if (phone.length === 10) {
+      phone = "+91" + phone;
+    }
+
+    const user = await User.findOne({ phoneNumber: phone });
+
+    if (!user) {
+      return res.status(404).json({
+        status: "fail",
+        message: "No account found. Please signup first.",
+      });
+    }
+
+    console.log("User found:", user.phoneNumber);
+
+    res.status(200).json({
+      status: "success",
+      message: "Login successful",
+=======
     const { firebaseToken } = req.body;
     console.log(firebaseToken);
     if (!firebaseToken) {
@@ -68,15 +98,24 @@ exports.login = async (req, res) => {
 
     res.status(200).json({
       status: "success",
+>>>>>>> e37621d3d03161e4a30b16f7bc125385e0cce2b8
       data: {
         user,
       },
     });
   } catch (err) {
+<<<<<<< HEAD
+    console.error("Login Error:", err.message);
+
+    res.status(500).json({
+      status: "error",
+      message: "Internal server error",
+=======
     console.error(err);
 
     res.status(401).json({
       message: "Invalid Firebase token",
+>>>>>>> e37621d3d03161e4a30b16f7bc125385e0cce2b8
     });
   }
 };

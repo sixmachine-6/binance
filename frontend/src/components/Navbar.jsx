@@ -1,4 +1,10 @@
 import React from "react";
+<<<<<<< HEAD
+import { Link } from "react-router-dom";
+import { Search, Download, Globe, Moon, ChevronDown } from "lucide-react";
+
+const Navbar = () => {
+=======
 import { Link, useNavigate } from "react-router-dom";
 import { Search, Download, Globe, Moon, ChevronDown, User } from "lucide-react";
 
@@ -12,6 +18,7 @@ const Navbar = () => {
     navigate("/login");
   };
 
+>>>>>>> e37621d3d03161e4a30b16f7bc125385e0cce2b8
   return (
     <div className="bg-[#1c242f] flex justify-between items-center h-28 px-6">
       {/* Left Section */}
@@ -28,9 +35,15 @@ const Navbar = () => {
           <li className="hover:text-yellow-400">Buy Crypto</li>
           <li className="hover:text-yellow-400">Markets</li>
 
+<<<<<<< HEAD
+          <li className="flex items-center gap-1 hover:text-yellow-400">
+            Trade <ChevronDown size={18} />
+          </li>
+=======
          <Link to="/trade/:symbol"> <li className="flex items-center gap-1 hover:text-yellow-400">
             Trade <ChevronDown size={18} />
           </li></Link>
+>>>>>>> e37621d3d03161e4a30b16f7bc125385e0cce2b8
 
           <li className="flex items-center gap-1 hover:text-yellow-400">
             Futures <ChevronDown size={18} />
@@ -42,6 +55,21 @@ const Navbar = () => {
       <div className="flex items-center gap-5">
         <Search className="w-5 h-5 cursor-pointer text-white hover:text-yellow-400" />
 
+<<<<<<< HEAD
+        {/* Login Button */}
+        <Link to="/login">
+          <button className="px-4 py-2 bg-slate-700 text-white rounded-lg hover:bg-slate-600">
+            Log In
+          </button>
+        </Link>
+
+        {/* Signup Button */}
+        <Link to="/signup">
+          <button className="px-4 py-2 bg-yellow-400 text-black rounded-lg hover:bg-yellow-300">
+            Sign Up
+          </button>
+        </Link>
+=======
         {!user ? (
           <>
             {/* Login */}
@@ -67,6 +95,7 @@ const Navbar = () => {
             />
           </div>
         )}
+>>>>>>> e37621d3d03161e4a30b16f7bc125385e0cce2b8
 
         <Download className="w-5 h-5 cursor-pointer text-white hover:text-yellow-400" />
         <Globe className="w-5 h-5 cursor-pointer text-white hover:text-yellow-400" />

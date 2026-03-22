@@ -1,10 +1,18 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
+<<<<<<< HEAD
+import { useWatchlist } from "../../context/WatchlistContext";
+import { useMarketData } from "../../hooks/useMarketData";
+
+export default function MarketCard({ title }) {
+  const { watchlist, toggleWatchlist } = useWatchlist();
+=======
 import { useWatchlist } from "../../hooks/useWatchlist";
 import { useMarketData } from "../../hooks/useMarketData";
 
 export default function MarketCard({ title }) {
   const { watchlist = [], toggleWatchlist } = useWatchlist();
+>>>>>>> e37621d3d03161e4a30b16f7bc125385e0cce2b8
   const [filter, setFilter] = useState("CRYPTO");
 
   const { data: coins = [], isLoading } = useMarketData(filter);
@@ -61,6 +69,9 @@ export default function MarketCard({ title }) {
               className="no-underline text-inherit"
             >
               <div className="grid grid-cols-[2fr_1fr_1fr] items-center p-2.5 cursor-pointer border-b border-[#1e1e1e] hover:bg-[#151821] transition">
+                <div className="flex items-center gap-3">
+                  <span className="w-5 text-gray-400">{i + 1}</span>
+
                 {/* Left section */}
                 <div className="flex items-center gap-3">
                   <span className="w-5 text-gray-400">{i + 1}</span>
