@@ -12,6 +12,8 @@ import AppLayout from "./ui/AppLayout";
 import Portfolio from "./pages/Portfolio";
 import { Toaster } from "react-hot-toast";
 import Reports from "./pages/Reports";
+import MarketOverview from "./pages/MarketOverview";
+import Futures from "./pages/Futures";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -26,18 +28,14 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        {/* ✅ Toast container */}
         <Toaster position="top-right" reverseOrder={false} />
 
         <Routes>
-          {/* Redirect */}
           <Route path="/" element={<Navigate to="/dashboard" />} />
 
-          {/* Public Routes */}
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
 
-          {/* Protected Routes */}
           <Route
             element={
               <ProtectedRoute>
@@ -50,6 +48,8 @@ function App() {
             <Route path="/watchlist" element={<Watchlist />} />
             <Route path="/portfolio" element={<Portfolio />} />
             <Route path="/reports" element={<Reports />} />
+            <Route path="/markets" element={<MarketOverview />} />
+            <Route path="/futures" element={<Futures />} />
           </Route>
         </Routes>
       </BrowserRouter>

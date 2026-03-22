@@ -1,19 +1,22 @@
 import { useRef } from "react";
 import { useExecuteTrade } from "../../hooks/useExecuteTrade";
 
-export default function TradePanel({ symbol, price }) {
+import { useQuery } from "@tanstack/react-query";
+
+export default function TradePanel({ symbol, priceRef }) {
+  const { data } = useQuery({ queryKey: ["candles", symbol] }); // reuses cached data, no new fetch
+  const livePrice = data ? parseFloat(data[data.length - 1][4]) : "--";
   const amountRef = useRef();
 
   const { mutate } = useExecuteTrade();
 
   const handleBuy = () => {
     const amount = Number(amountRef.current.value);
-
     if (!amount) return;
 
     mutate({
       symbol,
-      price,
+      price: priceRef.current,
       quantity: amount,
       side: "BUY",
     });
@@ -23,12 +26,11 @@ export default function TradePanel({ symbol, price }) {
 
   const handleSell = () => {
     const amount = Number(amountRef.current.value);
-
     if (!amount) return;
 
     mutate({
       symbol,
-      price,
+      price: priceRef.current,
       quantity: amount,
       side: "SELL",
     });
@@ -38,18 +40,15 @@ export default function TradePanel({ symbol, price }) {
 
   return (
     <div className="bg-[#0b0e11] border border-gray-800 rounded-2xl p-5 w-full space-y-5 shadow-lg">
-      {/* Market Header */}
       <div className="flex justify-between text-sm text-gray-400">
         <span>Market</span>
         <span className="text-gray-200">{symbol}</span>
       </div>
 
-      {/* Price */}
       <div className="text-lg font-semibold text-white">
-        Price: ${price || "--"}
+        Price: ${livePrice}
       </div>
 
-      {/* Amount Input */}
       <input
         ref={amountRef}
         type="number"
@@ -58,7 +57,6 @@ export default function TradePanel({ symbol, price }) {
         outline-none focus:ring-1 focus:ring-yellow-400"
       />
 
-      {/* Buy / Sell Buttons */}
       <div className="flex gap-3">
         <button
           onClick={handleBuy}

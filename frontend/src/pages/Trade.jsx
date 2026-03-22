@@ -10,24 +10,24 @@ export default function Trade() {
   const { symbol } = useParams();
 
   return (
-    <div className="h-screen flex flex-col bg-[#0f1116] text-white">
+    <div className="h-screen flex flex-col bg-[#0f1116] text-white overflow-hidden">
       <PairHeader symbol={symbol} />
 
-      <div className="grid grid-cols-[300px_1fr_320px] flex-1">
-        {/* ORDER BOOK */}
-        <OrderBook symbol={symbol} />
+      <div className="grid grid-cols-[300px_1fr_320px] flex-1 min-h-0">
 
-        {/* CENTER AREA */}
-        <div className="flex flex-col">
+        <div className="overflow-hidden border-r border-gray-800">
+          <OrderBook symbol={symbol} />
+        </div>
+
+        <div className="flex flex-col min-w-0 min-h-0 overflow-hidden">
           <Chart symbol={symbol} />
         </div>
 
-        {/* RIGHT PANEL */}
-        <div className="flex flex-col border-l border-gray-800">
+        <div className="flex flex-col border-l border-gray-800 overflow-hidden">
           <MarketSidebar />
-
           <MarketTrades symbol={symbol} />
         </div>
+
       </div>
     </div>
   );
