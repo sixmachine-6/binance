@@ -65,10 +65,11 @@ export default function MarketCard({ title }) {
                 <div className="flex items-center gap-3">
                   <span className="w-5 text-gray-400">{i + 1}</span>
 
-                  {/* Watchlist toggle */}
+                
                   <span
                     onClick={(e) => {
-                      e.preventDefault();
+                      e.preventDefault();      // prevent link navigation
+                      e.stopPropagation();     // stop event from reaching parent Link
                       toggleWatchlist(coin.symbol);
                     }}
                     className="cursor-pointer"
