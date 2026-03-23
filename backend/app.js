@@ -13,7 +13,10 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 app.use(
   cors({
-    origin: "http://localhost:5173", // or your frontend URL
+    origin: [
+      "http://localhost:5173",
+      "https://storied-longma-214a12.netlify.app/",
+    ],
     credentials: true,
   }),
 );
