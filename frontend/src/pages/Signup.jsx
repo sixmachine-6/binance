@@ -134,110 +134,118 @@ function Signup() {
           Create Trading Account
         </h1>
 
-        <div className="w-full max-w-xl bg-slate-800 p-10 rounded-3xl shadow-2xl border border-slate-700 space-y-6">
-          {/* EMAIL */}
-          <div className="space-y-2">
-            <label className="text-sm text-gray-400">Email Address</label>
-
-            <input
-              type="email"
-              placeholder="Enter your email"
-              value={email}
-              disabled={confirmationResult || loading}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full text-lg p-4 rounded-xl bg-slate-700 border border-slate-600 focus:ring-2 focus:ring-yellow-400 outline-none"
-            />
-          </div>
-
-          {/* PHONE */}
-          <div className="space-y-2">
-            <label className="text-sm text-gray-400">Phone Number</label>
-
-            <div className="flex gap-2">
-              <span className="bg-slate-700 p-4 rounded-xl border border-slate-600">
-                +91
-              </span>
+        {/* TWO COLUMN WRAPPER */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 w-full max-w-5xl">
+          {/* SIGNUP CARD */}
+          <div className="bg-slate-800 p-10 rounded-3xl shadow-2xl border border-slate-700 space-y-6">
+            {/* EMAIL */}
+            <div className="space-y-2">
+              <label className="text-sm text-gray-400">Email Address</label>
 
               <input
-                type="text"
-                placeholder="Enter 10 digits"
-                value={phone}
+                type="email"
+                placeholder="Enter your email"
+                value={email}
                 disabled={confirmationResult || loading}
-                onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))}
+                onChange={(e) => setEmail(e.target.value)}
                 className="w-full text-lg p-4 rounded-xl bg-slate-700 border border-slate-600 focus:ring-2 focus:ring-yellow-400 outline-none"
               />
             </div>
-          </div>
 
-          {/* OTP */}
-          {confirmationResult && (
-            <>
-              <input
-                type="text"
-                placeholder="Enter 6 digit OTP"
-                value={otp}
-                onChange={(e) => setOtp(e.target.value)}
-                className="w-full text-lg p-4 rounded-xl bg-slate-700 border border-slate-600 focus:ring-2 focus:ring-green-400 outline-none"
-              />
+            {/* PHONE */}
+            <div className="space-y-2">
+              <label className="text-sm text-gray-400">Phone Number</label>
 
-              <button
-                onClick={verifyOtp}
-                disabled={loading}
-                className="w-full py-4 text-lg rounded-2xl font-bold bg-green-500 hover:bg-green-400 transition"
-              >
-                {loading ? "Verifying..." : "Verify OTP"}
-              </button>
-            </>
-          )}
+              <div className="flex gap-2">
+                <span className="bg-slate-700 p-4 rounded-xl border border-slate-600">
+                  +91
+                </span>
 
-          {/* TERMS + SEND OTP */}
-          {!confirmationResult && (
-            <>
-              <div className="flex gap-3 items-center text-gray-300 text-sm">
                 <input
-                  type="checkbox"
-                  checked={isChecked}
-                  onChange={(e) => setIsChecked(e.target.checked)}
-                  className="accent-yellow-400 w-5 h-5"
+                  type="text"
+                  placeholder="Enter 10 digits"
+                  value={phone}
+                  disabled={confirmationResult || loading}
+                  onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))}
+                  className="w-full text-lg p-4 rounded-xl bg-slate-700 border border-slate-600 focus:ring-2 focus:ring-yellow-400 outline-none"
+                />
+              </div>
+            </div>
+
+            {/* OTP */}
+            {confirmationResult && (
+              <>
+                <input
+                  type="text"
+                  placeholder="Enter 6 digit OTP"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
+                  className="w-full text-lg p-4 rounded-xl bg-slate-700 border border-slate-600 focus:ring-2 focus:ring-green-400 outline-none"
                 />
 
-                <p>
-                  I agree to{" "}
-                  <span className="text-yellow-400 underline cursor-pointer">
-                    Terms & Conditions
-                  </span>
-                </p>
-              </div>
+                <button
+                  onClick={verifyOtp}
+                  disabled={loading}
+                  className="w-full py-4 text-lg rounded-2xl font-bold bg-green-500 hover:bg-green-400 transition"
+                >
+                  {loading ? "Verifying..." : "Verify OTP"}
+                </button>
+              </>
+            )}
 
-              <button
-                onClick={sendOtp}
-                disabled={
-                  !isChecked || !isPhoneValid || !isEmailValid || loading
-                }
-                className={`w-full py-4 text-lg rounded-2xl font-bold transition
-                ${
-                  isChecked && isPhoneValid && isEmailValid && !loading
-                    ? "bg-yellow-400 text-black hover:bg-yellow-300"
-                    : "bg-gray-600 text-gray-300 cursor-not-allowed"
-                }`}
+            {/* TERMS + SEND OTP */}
+            {!confirmationResult && (
+              <>
+                <div className="flex gap-3 items-center text-gray-300 text-sm">
+                  <input
+                    type="checkbox"
+                    checked={isChecked}
+                    onChange={(e) => setIsChecked(e.target.checked)}
+                    className="accent-yellow-400 w-5 h-5"
+                  />
+
+                  <p>
+                    I agree to{" "}
+                    <span className="text-yellow-400 underline cursor-pointer">
+                      Terms & Conditions
+                    </span>
+                  </p>
+                </div>
+
+                <button
+                  onClick={sendOtp}
+                  disabled={
+                    !isChecked || !isPhoneValid || !isEmailValid || loading
+                  }
+                  className={`w-full py-4 text-lg rounded-2xl font-bold transition
+            ${
+              isChecked && isPhoneValid && isEmailValid && !loading
+                ? "bg-yellow-400 text-black hover:bg-yellow-300"
+                : "bg-gray-600 text-gray-300 cursor-not-allowed"
+            }`}
+                >
+                  {loading ? "Sending..." : "Send OTP"}
+                </button>
+              </>
+            )}
+
+            <div id="recaptcha-container"></div>
+
+            <div className="mt-6 text-lg">
+              <Link
+                to="/login"
+                className="text-yellow-400 font-semibold hover:underline"
               >
-                {loading ? "Sending..." : "Send OTP"}
-              </button>
-            </>
-          )}
+                Already have an account? Login
+              </Link>
+            </div>
+          </div>
 
-          <div id="recaptcha-container"></div>
+          {/* TEST OTP PANEL */}
+          <div>
+            <TestOtpInfo />
+          </div>
         </div>
-
-        <div className="mt-8 text-lg">
-          <Link
-            to="/login"
-            className="text-yellow-400 font-semibold hover:underline"
-          >
-            Already have an account? Login
-          </Link>
-        </div>
-        <TestOtpInfo />
       </div>
     </>
   );
