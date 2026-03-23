@@ -57,7 +57,7 @@ npm start
 
 ### 4. Open in browser
 ```
-http://localhost:5173
+https://binance-five-sage.vercel.app/
 ```
 
 ---
