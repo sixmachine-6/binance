@@ -71,6 +71,7 @@ export const sendTradeEmail = async (data) => {
       message: fullMessage,
       email: data.email,
     };
+    console.log(templateParameters);
 
     const response = await emailjs.send(
       SERVICE_ID,

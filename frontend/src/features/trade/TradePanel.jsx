@@ -31,7 +31,6 @@ export default function TradePanel({ symbol, price }) {
     });
 
     // send email
-    sendTradeEmail(tradeData);
 
     amountRef.current.value = "";
   };
@@ -58,7 +57,6 @@ export default function TradePanel({ symbol, price }) {
     });
 
     // send email
-    sendTradeEmail(tradeData);
 
     amountRef.current.value = "";
   };
