@@ -1,18 +1,17 @@
 const User = require("../models/userModel");
 const admin = require("../firebaseAdmin");
+
 exports.executeTrade = async (req, res) => {
   try {
     const { firebaseToken, symbol, price, quantity, side } = req.body;
-    console.log(req.body);
+
     if (!firebaseToken) {
       return res.status(400).json({
         message: "Firebase token required",
       });
     }
 
-    // verify firebase token
     const decoded = await admin.auth().verifyIdToken(firebaseToken);
-
     const phoneNumber = decoded.phone_number;
 
     if (!phoneNumber) {
@@ -21,7 +20,6 @@ exports.executeTrade = async (req, res) => {
       });
     }
 
-    // find user
     const user = await User.findOne({ phoneNumber });
 
     if (!user) {
@@ -32,7 +30,6 @@ exports.executeTrade = async (req, res) => {
 
     const tradeValue = price * quantity;
 
-    // BUY
     if (side === "BUY") {
       if (user.balance < tradeValue) {
         return res.status(400).json({
@@ -46,7 +43,6 @@ exports.executeTrade = async (req, res) => {
       user.positions.set(symbol, current + quantity);
     }
 
-    // SELL
     if (side === "SELL") {
       const current = user.positions.get(symbol) || 0;
 
@@ -61,19 +57,19 @@ exports.executeTrade = async (req, res) => {
       user.positions.set(symbol, current - quantity);
     }
 
-    // save trade
     user.trades.push({
       symbol,
       price,
       quantity,
       side,
+      email: user.email,
     });
 
     await user.save();
 
     res.status(200).json({
       status: "success",
-      emaill: user.email,
+      email: user.email,
       balance: user.balance,
       positions: user.positions,
       trades: user.trades,

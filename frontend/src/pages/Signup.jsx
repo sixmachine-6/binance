@@ -6,6 +6,7 @@ import { useSignup } from "../hooks/useSignup";
 
 import { auth } from "../firebase";
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
+import TestOtpInfo from "../ui/TestotpInfo";
 
 function Signup() {
   const navigate = useNavigate();
@@ -236,6 +237,7 @@ function Signup() {
             Already have an account? Login
           </Link>
         </div>
+        <TestOtpInfo />
       </div>
     </>
   );
