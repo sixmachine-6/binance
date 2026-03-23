@@ -16,6 +16,7 @@ app.use(
     origin: [
       "http://localhost:5173",
       "https://storied-longma-214a12.netlify.app",
+      "https://binance-five-sage.vercel.app",
     ],
     credentials: true,
   }),
