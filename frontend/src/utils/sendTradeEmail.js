@@ -5,6 +5,7 @@ const TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID_TRADE;
 const PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
 console.log(SERVICE_ID, TEMPLATE_ID, PUBLIC_KEY);
 export const sendTradeEmail = async (data) => {
+  console.log(data);
   try {
     const isBuy = data.type_currency.toLowerCase() === "buy";
 

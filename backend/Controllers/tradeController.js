@@ -73,6 +73,7 @@ exports.executeTrade = async (req, res) => {
 
     res.status(200).json({
       status: "success",
+      emaill: user.email,
       balance: user.balance,
       positions: user.positions,
       trades: user.trades,
