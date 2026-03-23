@@ -15,7 +15,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173",
-      "https://storied-longma-214a12.netlify.app/",
+      "https://storied-longma-214a12.netlify.app",
     ],
     credentials: true,
   }),
