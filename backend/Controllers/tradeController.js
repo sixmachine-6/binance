@@ -88,8 +88,6 @@ exports.executeTrade = async (req, res) => {
 
 const axios = require("axios");
 
-const axios = require("axios");
-
 exports.getPortfolio = async (req, res) => {
   try {
     const { firebaseToken } = req.body;
