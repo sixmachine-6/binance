@@ -21,13 +21,13 @@ function Login() {
 
   // Redirect if already logged in
   useEffect(() => {
-    const user = auth.currentUser;
-
-    if (user) {
+    const token = localStorage.getItem("_grecaptcha");
+    if (token) {
       navigate("/dashboard");
     }
-  }, []);
-  // Cleanup recaptcha
+  }, [navigate]);
+
+  // Cleanup recaptcha when component unmounts
   useEffect(() => {
     return () => {
       if (window.recaptchaVerifier) {
@@ -69,7 +69,6 @@ function Login() {
       );
 
       setConfirmationResult(result);
-
       toast.success("OTP Sent 📲");
     } catch (err) {
       console.error(err);
@@ -82,15 +81,21 @@ function Login() {
   // VERIFY OTP
   const verifyOtp = async () => {
     if (!otp || otp.length < 6) {
-      return toast.error("Enter 6 digit OTP");
+      toast.error("Enter 6 digit OTP");
+      return;
+    }
+
+    if (!confirmationResult) {
+      toast.error("Send OTP first");
+      return;
     }
 
     setLoading(true);
 
     try {
       const result = await confirmationResult.confirm(otp);
-
       const user = result.user;
+
       const firebaseToken = await user.getIdToken();
 
       mutate(
@@ -106,7 +111,6 @@ function Login() {
 
             toast.error(message);
 
-            // redirect if user not found
             if (error?.response?.status === 404) {
               navigate("/signup");
             }
@@ -150,17 +154,17 @@ function Login() {
             </div>
           </div>
 
-          {/* SEND OTP */}
+          {/* SEND OTP BUTTON */}
           {!confirmationResult && (
             <button
               onClick={sendOtp}
               disabled={!isPhoneValid || loading}
               className={`w-full py-4 text-lg rounded-2xl font-bold transition
-              ${
-                isPhoneValid && !loading
-                  ? "bg-yellow-400 text-black hover:bg-yellow-300"
-                  : "bg-gray-600 cursor-not-allowed text-gray-300"
-              }`}
+                ${
+                  isPhoneValid && !loading
+                    ? "bg-yellow-400 text-black hover:bg-yellow-300"
+                    : "bg-gray-600 cursor-not-allowed text-gray-300"
+                }`}
             >
               {loading ? "Sending..." : "Send OTP"}
             </button>

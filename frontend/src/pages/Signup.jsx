@@ -7,9 +7,9 @@ import { useSignup } from "../hooks/useSignup";
 import { auth } from "../firebase";
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 
-const Signup = () => {
+function Signup() {
   const navigate = useNavigate();
-  const { mutate, isPending } = useSignup();
+  const { mutate } = useSignup();
 
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -24,14 +24,13 @@ const Signup = () => {
   const isPhoneValid = phoneRegex.test(phone);
   const isEmailValid = emailRegex.test(email);
 
+  // Redirect if already logged in
   useEffect(() => {
-    const user = auth.currentUser;
+    const token = localStorage.getItem("_grecaptcha");
+    if (token) navigate("/dashboard");
+  }, [navigate]);
 
-    if (user) {
-      navigate("/dashboard");
-    }
-  }, []);
-
+  // Cleanup recaptcha
   useEffect(() => {
     return () => {
       if (window.recaptchaVerifier) {
@@ -42,11 +41,10 @@ const Signup = () => {
   }, []);
 
   // SEND OTP
-  const sendOtp = async (e) => {
-    e.preventDefault();
-
+  const sendOtp = async () => {
     if (!isChecked) return toast.error("Accept Terms & Conditions first");
     if (!isEmailValid) return toast.error("Enter valid email");
+    if (!isPhoneValid) return toast.error("Enter valid phone number");
 
     setLoading(true);
 
@@ -59,57 +57,51 @@ const Signup = () => {
       window.recaptchaVerifier = new RecaptchaVerifier(
         auth,
         "recaptcha-container",
-        {
-          size: "invisible",
-          callback: () => {
-            console.log("reCAPTCHA solved");
-          },
-        },
+        { size: "invisible" },
       );
 
       const appVerifier = window.recaptchaVerifier;
-      const formatPhone = `+91${phone}`;
 
       const result = await signInWithPhoneNumber(
         auth,
-        formatPhone,
+        `+91${phone}`,
         appVerifier,
       );
 
       setConfirmationResult(result);
-      toast.success("OTP Sent! Check your phone 📲");
-    } catch (err) {
-      console.error("SMS Error:", err);
 
-      if (err.code === "auth/billing-not-enabled") {
-        toast.error(
-          "Daily limit reached or Billing not enabled. Use a TEST NUMBER.",
-        );
-      } else if (err.code === "auth/too-many-requests") {
-        toast.error("Too many attempts. Please try again later.");
+      toast.success("OTP Sent 📲");
+    } catch (err) {
+      console.error(err);
+
+      if (err.code === "auth/too-many-requests") {
+        toast.error("Too many attempts. Try later.");
       } else {
         toast.error(err.message || "Failed to send OTP");
       }
-
-      if (window.recaptchaVerifier) {
-        window.recaptchaVerifier.clear();
-        window.recaptchaVerifier = null;
-      }
-    } finally {
-      setLoading(false);
     }
+
+    setLoading(false);
   };
 
   // VERIFY OTP
   const verifyOtp = async () => {
-    if (!otp || otp.length < 6) return toast.error("Enter 6-digit OTP");
+    if (!confirmationResult) {
+      toast.error("Send OTP first");
+      return;
+    }
+
+    if (!otp || otp.length < 6) {
+      toast.error("Enter 6 digit OTP");
+      return;
+    }
 
     setLoading(true);
 
     try {
       const result = await confirmationResult.confirm(otp);
-      const user = result.user;
 
+      const user = result.user;
       const firebaseToken = await user.getIdToken();
 
       mutate(
@@ -119,19 +111,17 @@ const Signup = () => {
             toast.success("Account Created 🚀");
             navigate("/dashboard");
           },
+
           onError: (error) => {
-            toast.error(
-              error?.response?.data?.message || "Backend Sync Failed",
-            );
+            toast.error(error?.response?.data?.message || "Signup failed");
           },
         },
       );
     } catch (err) {
-      console.error("Verification Error:", err);
-      toast.error("Invalid OTP. Try again.");
-    } finally {
-      setLoading(false);
+      toast.error("Invalid OTP");
     }
+
+    setLoading(false);
   };
 
   return (
@@ -144,21 +134,21 @@ const Signup = () => {
         </h1>
 
         <div className="w-full max-w-xl bg-slate-800 p-10 rounded-3xl shadow-2xl border border-slate-700 space-y-6">
-          {/* EMAIL INPUT */}
+          {/* EMAIL */}
           <div className="space-y-2">
             <label className="text-sm text-gray-400">Email Address</label>
 
             <input
               type="email"
-              disabled={confirmationResult || loading}
               placeholder="Enter your email"
               value={email}
+              disabled={confirmationResult || loading}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full text-lg p-4 rounded-xl bg-slate-700 border border-slate-600 focus:ring-2 focus:ring-yellow-400 outline-none transition disabled:opacity-50"
+              className="w-full text-lg p-4 rounded-xl bg-slate-700 border border-slate-600 focus:ring-2 focus:ring-yellow-400 outline-none"
             />
           </div>
 
-          {/* PHONE INPUT */}
+          {/* PHONE */}
           <div className="space-y-2">
             <label className="text-sm text-gray-400">Phone Number</label>
 
@@ -169,35 +159,34 @@ const Signup = () => {
 
               <input
                 type="text"
-                disabled={confirmationResult || loading}
                 placeholder="Enter 10 digits"
                 value={phone}
+                disabled={confirmationResult || loading}
                 onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))}
-                className="w-full text-lg p-4 rounded-xl bg-slate-700 border border-slate-600 focus:ring-2 focus:ring-yellow-400 outline-none transition disabled:opacity-50"
+                className="w-full text-lg p-4 rounded-xl bg-slate-700 border border-slate-600 focus:ring-2 focus:ring-yellow-400 outline-none"
               />
             </div>
           </div>
 
-          {/* OTP INPUT */}
+          {/* OTP */}
           {confirmationResult && (
-            <div className="space-y-4 pt-4 border-t border-slate-700">
+            <>
               <input
                 type="text"
-                placeholder="Enter 6-digit OTP"
+                placeholder="Enter 6 digit OTP"
                 value={otp}
                 onChange={(e) => setOtp(e.target.value)}
                 className="w-full text-lg p-4 rounded-xl bg-slate-700 border border-slate-600 focus:ring-2 focus:ring-green-400 outline-none"
               />
 
               <button
-                type="button"
                 onClick={verifyOtp}
                 disabled={loading}
-                className="w-full py-4 text-lg rounded-2xl font-bold bg-green-500 hover:bg-green-400 transition disabled:bg-gray-600"
+                className="w-full py-4 text-lg rounded-2xl font-bold bg-green-500 hover:bg-green-400 transition"
               >
                 {loading ? "Verifying..." : "Verify OTP"}
               </button>
-            </div>
+            </>
           )}
 
           {/* TERMS + SEND OTP */}
@@ -208,7 +197,7 @@ const Signup = () => {
                   type="checkbox"
                   checked={isChecked}
                   onChange={(e) => setIsChecked(e.target.checked)}
-                  className="accent-yellow-400 w-5 h-5 cursor-pointer"
+                  className="accent-yellow-400 w-5 h-5"
                 />
 
                 <p>
@@ -224,14 +213,14 @@ const Signup = () => {
                 disabled={
                   !isChecked || !isPhoneValid || !isEmailValid || loading
                 }
-                className={`w-full py-4 text-lg rounded-2xl font-bold transition-all
+                className={`w-full py-4 text-lg rounded-2xl font-bold transition
                 ${
                   isChecked && isPhoneValid && isEmailValid && !loading
                     ? "bg-yellow-400 text-black hover:bg-yellow-300"
-                    : "bg-gray-600 cursor-not-allowed text-gray-300"
+                    : "bg-gray-600 text-gray-300 cursor-not-allowed"
                 }`}
               >
-                {loading ? "Please wait..." : "Send OTP"}
+                {loading ? "Sending..." : "Send OTP"}
               </button>
             </>
           )}
@@ -250,6 +239,6 @@ const Signup = () => {
       </div>
     </>
   );
-};
+}
 
 export default Signup;

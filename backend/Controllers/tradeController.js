@@ -88,6 +88,8 @@ exports.executeTrade = async (req, res) => {
 
 const axios = require("axios");
 
+const axios = require("axios");
+
 exports.getPortfolio = async (req, res) => {
   try {
     const { firebaseToken } = req.body;
@@ -105,7 +107,6 @@ exports.getPortfolio = async (req, res) => {
 
     // Convert Map → Object
     const positions = Object.fromEntries(user.positions || new Map());
-
     const symbols = Object.keys(positions);
 
     let prices = {};
@@ -114,7 +115,7 @@ exports.getPortfolio = async (req, res) => {
       const responses = await Promise.all(
         symbols.map((symbol) =>
           axios.get(
-            `https://api.binance.com/api/v3/ticker/price?symbol=${symbol}`,
+            `https://data-api.binance.vision/api/v3/ticker/price?symbol=${symbol}`,
           ),
         ),
       );
