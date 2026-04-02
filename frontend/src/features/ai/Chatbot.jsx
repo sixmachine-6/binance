@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import { MessageCircle } from "lucide-react";
-
+import toast from "react-hot-toast";
+import { getAuth } from "firebase/auth";
 export default function Chatbot() {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState([
@@ -17,14 +18,35 @@ export default function Chatbot() {
   }, [messages, open]);
 
   async function handleSend() {
-    if (!input) return;
-
-    const inputMessage = { role: "user", content: input };
-
-    setMessages((messages) => [...messages, inputMessage]);
-    setInput("");
-
     try {
+      const user = getAuth().currentUser;
+
+      if (!user) {
+        toast.error("User not logged in");
+        return;
+      }
+
+      const firebaseToken = await user.getIdToken();
+
+      // Dummy notification test (disabled now)
+      // await axios.post("http://127.0.0.1:5000/api/v1/notifications/create", {
+      //   firebaseToken,
+      //   message: "BTCUSDT BUY signal generated",
+      //   decision: "BUY",
+      //   entry_price: 67000,
+      //   take_profit: 69000,
+      //   stop_loss: 65000,
+      // });
+
+      // toast.success("Notification created successfully 🚀");
+
+      if (!input) return;
+
+      const inputMessage = { role: "user", content: input };
+
+      setMessages((messages) => [...messages, inputMessage]);
+      setInput("");
+
       const response = await axios.post(
         "http://localhost:8000/chat",
         [inputMessage],
@@ -33,17 +55,91 @@ export default function Chatbot() {
         },
       );
 
-      console.log("Response:", response.data);
+      const newMessages = response.data.messages;
 
-      setMessages((messages) => [...messages, response.data]);
+      console.log("Response:", newMessages);
+
+      // add chatbot messages
+      setMessages((messages) => [...messages, ...newMessages]);
+
+      // find judge agent message
+      const judgeMessage = newMessages.find(
+        (msg) => msg.agent === "judge_agent",
+      );
+
+      // create notification if BUY or SELL
+      if (
+        judgeMessage &&
+        (judgeMessage.decision === "BUY" || judgeMessage.decision === "SELL")
+      ) {
+        await axios.post("http://127.0.0.1:5000/api/v1/notifications/create", {
+          firebaseToken,
+          message: judgeMessage.content,
+          decision: judgeMessage.decision,
+          entry_price: judgeMessage.entry_price,
+          take_profit: judgeMessage.take_profit,
+          stop_loss: judgeMessage.stop_loss,
+        });
+
+        toast.success(`AI Signal: ${judgeMessage.decision} 🚨`);
+      }
     } catch (error) {
       console.error(
         "Error occurred:",
         error.response ? error.response.data : error.message,
       );
-    }
-  }
 
+      toast.error("Failed to process request ❌");
+    }
+
+    // if (!input) return;
+
+    // const inputMessage = { role: "user", content: input };
+
+    // setMessages((messages) => [...messages, inputMessage]);
+    // setInput("");
+
+    // try {
+    //   const response = await axios.post(
+    //     "http://localhost:8000/chat",
+    //     [inputMessage],
+    //     {
+    //       headers: { "Content-Type": "application/json" },
+    //     },
+    //   );
+
+    //   const newMessages = response.data.messages;
+
+    //   console.log("Response:", newMessages);
+
+    //   // add chatbot messages
+    //   setMessages((messages) => [...messages, ...newMessages]);
+
+    //   // find judge agent message
+    //   const judgeMessage = newMessages.find(
+    //     (msg) => msg.agent === "judge_agent",
+    //   );
+
+    //   // create notification if BUY or SELL
+    //   if (
+    //     judgeMessage &&
+    //     (judgeMessage.decision === "BUY" || judgeMessage.decision === "SELL")
+    //   ) {
+    //     await axios.post("http://127.0.0.1:5000/api/v1/notifications/create", {
+    //       message: judgeMessage.content,
+    //       decision: judgeMessage.decision,
+    //       entry_price: judgeMessage.entry_price,
+    //       take_profit: judgeMessage.take_profit,
+    //       stop_loss: judgeMessage.stop_loss,
+    //     });
+    //   }
+    // } catch (error) {
+    //   console.error(
+    //     "Error occurred:",
+    //     error.response ? error.response.data : error.message,
+    //   );
+    // }
+  }
   return (
     <>
       {/* Floating Button */}
@@ -106,7 +202,8 @@ export default function Chatbot() {
 
           <button
             onClick={handleSend}
-            className="bg-yellow-400 hover:bg-black-700 px-4 rounded-lg text-black" >
+            className="bg-yellow-400 hover:bg-black-700 px-4 rounded-lg text-black"
+          >
             Send
           </button>
         </div>

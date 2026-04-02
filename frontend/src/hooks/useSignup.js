@@ -6,7 +6,14 @@ export function useSignup() {
   const mutation = useMutation({
     mutationFn: signupAccount,
 
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
+      // variables contains what you passed to mutate()
+      const { email } = variables;
+
+      if (email) {
+        localStorage.setItem("email", email);
+      }
+
       toast.success("Account Created Successfully 🚀");
     },
 

@@ -1,6 +1,21 @@
 from utils import get_response_llm, create_client
 from data.market_data import get_market_data
 import json
+import re
+
+
+def extract_json(text):
+    """
+    Extract JSON object from LLM response safely
+    """
+    try:
+        match = re.search(r"\{.*\}", text, re.DOTALL)
+        if match:
+            return json.loads(match.group())
+    except Exception:
+        pass
+
+    return None
 
 
 def market_analysis_agent(messages, symbol):
@@ -23,9 +38,8 @@ You are a cryptocurrency market analyst.
 
 Analyze the market conditions using the given data.
 Discuss trend, RSI condition and price location.
-Return short analysis.
 
-Output JSON:
+Return ONLY JSON.
 
 {
 "analysis": ""
@@ -33,19 +47,29 @@ Output JSON:
 """
 
     input_message = [
-        {"role":"system","content":system_prompt},
-        {"role":"system","content":market_context}
+        {"role": "system", "content": system_prompt},
+        {"role": "system", "content": market_context}
     ] + messages[-2:]
 
-    response = get_response_llm(client,input_message)
+    response = get_response_llm(client, input_message)
 
-    try:
-        output=json.loads(response)
-    except:
-        output={"analysis":"Unable to analyze"}
+    print("Market analysis raw response:", response)
+
+    output = extract_json(response)
+
+    if not output:
+        output = {}
+
+# Try multiple possible keys
+    analysis_text = (
+    output.get("analysis")
+    or output.get("reason")
+    or output.get("message")
+    or response
+)
 
     return {
-        "role":"assistant",
-        "content":output["analysis"],
-        "agent":"market_analysis_agent"
-    }
+    "role": "assistant",
+    "content": analysis_text,
+    "agent": "market_analysis_agent"
+}

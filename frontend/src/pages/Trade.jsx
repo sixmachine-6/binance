@@ -15,8 +15,9 @@ export default function Trade() {
 
       <div className="grid grid-cols-[300px_1fr_320px] flex-1 min-h-0">
 
-        <div className="overflow-hidden border-r border-gray-800">
-          <OrderBook symbol={symbol} />
+        {/* CENTER AREA */}
+        <div className="flex flex-col">
+          <Chart symbol={symbol} />
         </div>
 
         <div className="flex flex-col min-w-0 min-h-0 overflow-hidden">

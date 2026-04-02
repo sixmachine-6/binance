@@ -7,6 +7,11 @@ const userSchema = new mongoose.Schema({
     unique: true,
     sparse: true,
   },
+  email: {
+    type: String,
+    unique: true,
+    sparse: true,
+  },
 
   createdAt: {
     type: Date,

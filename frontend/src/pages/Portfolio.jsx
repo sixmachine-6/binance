@@ -12,27 +12,51 @@ export default function Portfolio() {
   const trades = data?.trades ?? [];
   const prices = data?.prices ?? {};
 
-  // -------- Portfolio Calculations --------
+  // -----------------------------
+  // Portfolio Calculations
+  // -----------------------------
 
-  const investedValue = useMemo(() => {
-    return trades.reduce(
-      (acc, t) => acc + (t.price ?? 0) * (t.quantity ?? 0),
-      0,
-    );
-  }, [trades]);
+  const { currentValue, investedValue } = useMemo(() => {
+    let invested = 0;
+    let current = 0;
 
-  const currentValue = useMemo(() => {
-    return Object.entries(positions).reduce(
-      (acc, [coin, qty]) => acc + qty * (prices[coin] ?? 0),
-      0,
-    );
-  }, [positions, prices]);
+    Object.entries(positions).forEach(([coin, qty]) => {
+      const coinTrades = trades.filter((t) => t.symbol === coin);
+
+      let totalCost = 0;
+      let totalQty = 0;
+
+      coinTrades.forEach((t) => {
+        if (t.side === "BUY") {
+          totalCost += t.price * t.quantity;
+          totalQty += t.quantity;
+        }
+
+        if (t.side === "SELL") {
+          totalCost -= t.price * t.quantity;
+          totalQty -= t.quantity;
+        }
+      });
+
+      const avgPrice = totalQty > 0 ? totalCost / totalQty : 0;
+
+      invested += avgPrice * qty;
+      current += qty * (prices[coin] ?? 0);
+    });
+
+    return {
+      currentValue: current,
+      investedValue: invested,
+    };
+  }, [positions, trades, prices]);
 
   const totalPnL = currentValue - investedValue;
 
   const pnlPercent = investedValue === 0 ? 0 : (totalPnL / investedValue) * 100;
 
-  // -------- Calculate trade profit dynamically --------
+  // -----------------------------
+  // Trade Profit Calculation
+  // -----------------------------
 
   const tradesWithProfit = useMemo(() => {
     return trades.map((trade) => {
@@ -42,7 +66,9 @@ export default function Portfolio() {
 
       if (trade.side === "BUY") {
         profit = (currentPrice - trade.price) * trade.quantity;
-      } else {
+      }
+
+      if (trade.side === "SELL") {
         profit = (trade.price - currentPrice) * trade.quantity;
       }
 
@@ -53,7 +79,9 @@ export default function Portfolio() {
     });
   }, [trades, prices]);
 
-  // -------- analytics calculations --------
+  // -----------------------------
+  // Analytics
+  // -----------------------------
 
   const totalTrades = tradesWithProfit.length;
 
@@ -66,7 +94,9 @@ export default function Portfolio() {
   const winRate =
     totalTrades === 0 ? 0 : ((winningTrades / totalTrades) * 100).toFixed(2);
 
-  // -------- Loading state --------
+  // -----------------------------
+  // Loading
+  // -----------------------------
 
   if (isLoading) {
     return (
@@ -76,7 +106,9 @@ export default function Portfolio() {
     );
   }
 
-  // -------- No trades state --------
+  // -----------------------------
+  // No Trades
+  // -----------------------------
 
   if (trades.length === 0) {
     return (
@@ -100,6 +132,7 @@ export default function Portfolio() {
       <h1 className="text-2xl font-bold">Portfolio</h1>
 
       {/* Portfolio Value */}
+
       <div className="bg-gray-900 p-6 rounded-lg">
         <p className="text-gray-400">Portfolio Value</p>
 
@@ -118,6 +151,7 @@ export default function Portfolio() {
       </div>
 
       {/* Positions */}
+
       <div>
         <h2 className="text-xl mb-4">Positions</h2>
 
@@ -125,27 +159,34 @@ export default function Portfolio() {
           <p className="text-gray-400">No positions yet</p>
         ) : (
           <div className="space-y-3">
-            {Object.entries(positions).map(([coin, qty]) => (
-              <div
-                key={coin}
-                className="flex justify-between bg-gray-900 p-4 rounded-lg"
-              >
-                <span>{coin}</span>
+            {Object.entries(positions).map(([coin, qty]) => {
+              const price = prices[coin] ?? 0;
 
-                <div className="flex gap-6">
-                  <span>{qty}</span>
+              return (
+                <div
+                  key={coin}
+                  className="flex justify-between bg-gray-900 p-4 rounded-lg"
+                >
+                  <span>{coin}</span>
 
-                  <span className="text-gray-400">
-                    ${prices[coin]?.toFixed(2) ?? "0.00"}
-                  </span>
+                  <div className="flex gap-6">
+                    <span>{qty}</span>
+
+                    <span className="text-gray-400">${price.toFixed(2)}</span>
+
+                    <span className="text-gray-500">
+                      ${(qty * price).toFixed(2)}
+                    </span>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
 
       {/* Performance */}
+
       <div>
         <h2 className="text-xl mb-4">Performance Analytics</h2>
 

@@ -1,18 +1,17 @@
 from openai import OpenAI
 
 
-def get_response_llm(client, messages, temperature=0):
+def get_response_llm(client, messages, temperature=0.2):
 
     input_messages = []
 
     for message in messages:
 
-        # Ensure role/content exist
         role = message.get("role")
         content = message.get("content")
 
-        if role == "user":
-            print("User content:", content)
+        if role == "assistant":
+            continue
 
         input_messages.append({
             "role": role,
@@ -28,21 +27,6 @@ def get_response_llm(client, messages, temperature=0):
     )
 
     return response.choices[0].message.content
-
-
-def get_embedding_llm(client, text_input):
-
-    output = client.embeddings.create(
-        input=text_input,
-        model="ai/embeddinggemma:latest"
-    )
-
-    embeddings = []
-
-    for embedding_object in output.data:
-        embeddings.append(embedding_object.embedding)
-
-    return embeddings
 
 
 def create_client():

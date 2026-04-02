@@ -1,15 +1,14 @@
 from utils import get_response_llm, create_client
+from utils.json_parser import extract_json
 from data.market_data import get_market_data
-import json
 
+def trade_signal_agent(messages, symbol):
 
-def trade_signal_agent(messages,symbol):
+    client = create_client()
 
-    client=create_client()
+    market = get_market_data(symbol)
 
-    market=get_market_data(symbol)
-
-    market_context=f"""
+    market_context = f"""
 Symbol: {market['symbol']}
 Price: {market['price']}
 RSI: {market['rsi']}
@@ -17,15 +16,10 @@ Support: {market['support']}
 Resistance: {market['resistance']}
 """
 
-    system_prompt="""
-You are a crypto trading strategist.
+    system_prompt = """
+Generate crypto trade signal.
 
-Generate trade signal.
-
-Rules
-Risk reward minimum 1:2
-
-Output JSON
+Return ONLY JSON:
 
 {
 "decision":"BUY or SELL or HOLD",
@@ -36,17 +30,17 @@ Output JSON
 }
 """
 
-    input_message=[
+    input_message = [
         {"role":"system","content":system_prompt},
         {"role":"system","content":market_context}
-    ]+messages[-2:]
+    ] + messages
 
-    response=get_response_llm(client,input_message)
+    response = get_response_llm(client,input_message)
 
-    try:
-        output=json.loads(response)
-    except:
-        output={
+    output = extract_json(response)
+    print("Trade signal response:", output)
+    if not output:
+        output = {
             "decision":"HOLD",
             "message":"No signal"
         }

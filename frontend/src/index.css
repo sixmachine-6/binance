@@ -1,10 +1,24 @@
 @import "tailwindcss";
 
-.hide-scrollbar {
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE & Edge */
+.custom-scroll::-webkit-scrollbar {
+  width: 6px;
 }
 
-.hide-scrollbar::-webkit-scrollbar {
-  display: none; /* Chrome, Safari */
+.custom-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb {
+  background: #2a2f3a;
+  border-radius: 10px;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb:hover {
+  background: #3a404d;
+}
+
+/* Firefox support */
+.custom-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #2a2f3a transparent;
 }

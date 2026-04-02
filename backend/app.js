@@ -2,6 +2,7 @@ const express = require("express");
 const userRouter = require("./routes/userRoutes");
 const tradeRoutes = require("./routes/tradeRoutes");
 const watchlistRoutes = require("./routes/watchlistRoutes");
+const notificationRoutes = require("./routes/notificationRoutes");
 const cookieParser = require("cookie-parser");
 const path = require("path");
 const cors = require("cors");
@@ -12,11 +13,16 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 app.use(
   cors({
-    origin: "http://localhost:5173", // or your frontend URL
+    origin: [
+      "http://localhost:5173",
+      "https://storied-longma-214a12.netlify.app",
+      "https://binance-five-sage.vercel.app",
+    ],
     credentials: true,
   }),
 );
 
+app.use("/api/v1/notifications", notificationRoutes);
 app.use("/api/v1/watchlist", watchlistRoutes);
 app.use("/api/v1/trades", tradeRoutes);
 app.use("/api/v1/users", userRouter);

@@ -22,6 +22,7 @@ export default function Chart({ symbol }) {
   const priceRef = useRef(0);
 
   const [chartType, setChartType] = useState("candlestick");
+  const [price, setPrice] = useState(0);
 
   const { data } = useQuery({
     queryKey: ["candles", symbol],
@@ -29,6 +30,7 @@ export default function Chart({ symbol }) {
     refetchInterval: 2000,
   });
 
+  // Create chart
   useEffect(() => {
     if (!chartContainer.current) return;
 
@@ -106,38 +108,32 @@ export default function Chart({ symbol }) {
 
     seriesRef.current.setData(formattedData);
 
+    // set latest price
     const lastCandle = data[data.length - 1];
     if (lastCandle) {
-      priceRef.current = parseFloat(lastCandle[4]);
+      setPrice(parseFloat(lastCandle[4]));
     }
   }, [data, chartType]);
 
   return (
-    <div className="flex flex-col flex-1 min-w-0 min-h-0">
-
-      <div className="flex gap-2 px-4 py-2 border-b border-gray-800">
-        {["candlestick", "bar", "line"].map((type) => (
-          <button
-            key={type}
-            onClick={() => setChartType(type)}
-            className={`px-3 py-1 rounded text-xs font-semibold capitalize transition ${
-              chartType === type
-                ? "bg-yellow-400 text-black"
-                : "bg-[#1c242f] text-gray-400 hover:text-white"
-            }`}
-          >
-            {type}
-          </button>
-        ))}
+    <div className="flex flex-col gap-4">
+      {/* Chart selector */}
+      <div style={{ marginBottom: "10px" }}>
+        <select
+          value={chartType}
+          onChange={(e) => setChartType(e.target.value)}
+        >
+          <option value="candlestick">Candlestick</option>
+          <option value="bar">Bar Chart</option>
+          <option value="line">Line Chart</option>
+        </select>
       </div>
 
-      <div
-        ref={chartContainer}
-        className="flex-1 min-w-0 min-h-0"
-        style={{ width: "100%", height: "100%" }}
-      />
+      {/* Chart */}
+      <div ref={chartContainer} style={{ width: "100%", height: "500px" }} />
 
-      <TradePanel symbol={symbol} priceRef={priceRef} />
+      {/* Trade Panel */}
+      <TradePanel symbol={symbol} price={price} />
     </div>
   );
 }

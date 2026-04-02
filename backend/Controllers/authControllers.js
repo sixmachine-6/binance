@@ -3,7 +3,7 @@ const User = require("../models/userModel");
 
 exports.signup = async (req, res) => {
   try {
-    const { firebaseToken } = req.body;
+    const { firebaseToken, email } = req.body;
 
     const decoded = await admin.auth().verifyIdToken(firebaseToken);
 
@@ -17,6 +17,7 @@ exports.signup = async (req, res) => {
     if (!user) {
       user = await User.create({
         phoneNumber,
+        email,
         createdAt: new Date(),
       });
 
@@ -117,5 +118,63 @@ exports.deleteAllUsers = async (req, res) => {
       message: "Failed to delete users",
       error: error.message,
     });
+  }
+};
+
+exports.getMe = async (req, res) => {
+  try {
+    const { firebaseToken } = req.body;
+    console.log(req.body);
+    if (!firebaseToken) {
+      return res.status(401).json({ message: "No Firebase token provided" });
+    }
+
+    // Verify Firebase token using Firebase Admin
+    const decodedToken = await admin.auth().verifyIdToken(firebaseToken);
+
+    const phoneNumber = decodedToken.phone_number;
+
+    const user = await User.findOne({ phoneNumber });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    console.log(user);
+
+    res.json({
+      email: user.email || null,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(401).json({ message: "Invalid Firebase token" });
+  }
+};
+
+exports.addEmail = async (req, res) => {
+  try {
+    const { firebaseToken, email } = req.body;
+
+    if (!firebaseToken) {
+      return res.status(401).json({ message: "No Firebase token provided" });
+    }
+
+    const decodedToken = await admin.auth().verifyIdToken(firebaseToken);
+
+    const phoneNumber = decodedToken.phone_number;
+
+    const user = await User.findOneAndUpdate(
+      { phoneNumber },
+      { email },
+      { new: true },
+    );
+
+    res.json({
+      message: "Email saved",
+      email: user.email,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: error.message });
   }
 };

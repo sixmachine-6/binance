@@ -1,15 +1,21 @@
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
 import Home from "./pages/Home";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Trade from "./pages/Trade";
 import Watchlist from "./pages/Watchlist";
+import Portfolio from "./pages/Portfolio";
+import Reports from "./pages/Reports";
+import Notifications from "./pages/Notification";
+import Market from "./pages/Market";
+
 import ProtectedRoute from "./ui/ProtectedRoute";
 import AppLayout from "./ui/AppLayout";
-import Portfolio from "./pages/Portfolio";
+
 import { Toaster } from "react-hot-toast";
 import Reports from "./pages/Reports";
 import MarketOverview from "./pages/MarketOverview";
@@ -28,14 +34,19 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <Toaster position="top-right" reverseOrder={false} />
+        {/* Toast Notifications */}
+        <Toaster position="top-center" reverseOrder={false} />
 
         <Routes>
-          <Route path="/" element={<Navigate to="/dashboard" />} />
+          {/* Root Redirect */}
+          <Route path="/" element={<Navigate to="/login" replace />} />
 
+          {/* Public Routes */}
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/market" element={<Market />} />
 
+          {/* Protected Routes */}
           <Route
             element={
               <ProtectedRoute>
@@ -48,13 +59,16 @@ function App() {
             <Route path="/watchlist" element={<Watchlist />} />
             <Route path="/portfolio" element={<Portfolio />} />
             <Route path="/reports" element={<Reports />} />
-            <Route path="/markets" element={<MarketOverview />} />
-            <Route path="/futures" element={<Futures />} />
+            <Route path="/notifications" element={<Notifications />} />
           </Route>
+
+          {/* Catch all unknown routes */}
+          <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </BrowserRouter>
 
-      <ReactQueryDevtools />
+      {/* React Query Devtools */}
+      <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );
 }
