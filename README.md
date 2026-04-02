@@ -4,7 +4,7 @@ A full-stack crypto trading platform built during a hackathon, inspired by Binan
 
 ---
 
-## 🚀 Features
+## 🚀 Features 
 
 - 📈 **Live Trading Chart** — Real-time candlestick, bar, and line charts powered by Lightweight Charts + Binance API
 - 🌍 **Market Overview** — Live crypto price charts for BTC, ETH, BNB and more
