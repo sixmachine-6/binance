@@ -15,14 +15,19 @@ exports.signup = async (req, res) => {
     let user = await User.findOne({ phoneNumber });
 
     if (!user) {
+      // Create new user
       user = await User.create({
         phoneNumber,
         email,
         createdAt: new Date(),
       });
-
-      console.log("User saved:", phoneNumber);
+    } else {
+      // Update email if phone number already exists
+      user.email = email;
+      await user.save();
     }
+
+    console.log("User saved:", phoneNumber);
 
     res.status(200).json({
       status: "success",
